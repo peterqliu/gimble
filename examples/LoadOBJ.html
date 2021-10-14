@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>test</title>
+		<!-- <link rel='stylesheet' href='style.css'/> -->
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='assets/style.js'></script>
+		<script src='utils/stats.min.js'></script>
+
+		<script>
+
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			const towerLocation = [2.2945,48.85825];
+
+			var sf = new gimble.Map({
+
+				container: 'map',
+				background:'#eed',
+				onLoop: () => stats.update(),
+				center:towerLocation,
+				zoom:16,
+				pitch:40
+				// style: stylesheet
+			})
+
+			const area = {
+				"type": "Polygon",
+				"coordinates": [
+				[
+					[
+					  2.290349006652832,
+					  48.856188154046656
+					],
+					[
+					  2.2977519035339355,
+					  48.856188154046656
+					],
+					[
+					  2.2977519035339355,
+					  48.8605504576978
+					],
+					[
+					  2.290349006652832,
+					  48.8605504576978
+					],
+					[
+					  2.290349006652832,
+					  48.856188154046656
+					]
+				]
+				]
+			}
+
+			gimble.loadOBJ(
+				{
+					obj: './assets/eiffel.obj',
+					// align model to the map
+					normalize: {pitch:90, roll:45, scale:14}
+				}, 
+
+				obj => {
+					tower = obj;
+					obj
+						.setLngLat(towerLocation)
+					sf.add(obj)
+
+				})
+
+			new gimble.TileSource({
+				
+				type: 'vector',
+				tiles: 'https://tegola-osm-demo.go-spatial.org/v1/maps/osm/{z}/{x}/{y}.pbf',
+
+			})
+			.loadArea(
+				{zoom:14, geojson: area, maxTiles:20}, 
+				{
+					onTile: t => {
+
+						// add water areas
+						new gimble.Extrusion(
+							t.layers.landuse_areas
+								.filterFeatures(p=>p.type ==='water')
+								.concatFeatures(t.layers.water_areas), 
+							{
+								height:6, 
+								color: '#abcdef'
+							}
+						).addTo(sf)
+
+
+						// add parks
+						new gimble.Extrusion(
+							t.layers.landuse_areas
+								.filterFeatures(p=>p.type ==='park'), 
+							{
+							height: 1, 
+							color: 'green',
+							// renderOrder:11
+						}).addTo(sf)
+
+						// add buildings
+						var b = new gimble.Extrusion(
+							t.layers.buildings, 
+							{
+								// renderOrder:-11,
+								height: 10, 
+								// opacity:0.5,
+								color: '#ddd'
+							}
+						)
+
+						b.addTo(sf)
+
+						// add labels
+						l = new gimble.Label(
+							t.layers.amenity_points
+								.filterFeatures(p=> p.type === 'embassy'), 
+							{
+								text: p=>p.name,
+								color: 'brown',
+								haloColor: '#eed',
+								haloWidth:1,
+								size:20,
+								anchorY: 'bottom',
+								translation:{x:0, y:0, z:50},
+								// renderOrder:5
+							}
+						)
+
+						l.forEach(c=>sf.add(c))
+
+					}
+				}
+			)
+
+		</script>
+		
+	</body>
+</html>

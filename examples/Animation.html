@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<title>test</title>
+		<!-- <link rel='stylesheet' href='style.css'/> -->
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='assets/world.js'></script>
+		<script src='assets/style.js'></script>
+
+		<script src='utils/stats.min.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/dat.gui@0.7.7/build/dat.gui.min.js'></script>
+		<script>
+			
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+
+			var l;
+			var sf = new gimble.Map({
+				container: 'map',
+				background:'#eed',
+				onLoop: ()=>stats.update(), 
+			})
+
+			const point = {
+				"type": "Feature",
+				"properties": {},
+				"geometry": {
+					"type": "Point",
+					"coordinates": [
+						-122.42691993713379,
+						37.75979065676546,
+						999999
+					]
+				}
+			}
+
+			l = new gimble.Sphere(
+				point,
+				{
+					color: 'blue',
+					radius: 9999999
+				}
+			)
+
+			sf.on(
+				'click', 
+				e => l.animateTo({
+					position: e.point.toMercator(), 
+					duration:1200
+				})
+			)
+
+			l.material.wireframe = true
+
+
+			sf.add(l)
+
+			// Creating a GUI and a subfolder.
+			var gui = new dat.GUI();
+			var scale = gui.addFolder('Scale');
+			var rotation = gui.addFolder('Rotation');
+
+			var person = {
+				bearing:0, 
+				pitch:0, 
+				roll:0, 
+				scale:{x:1, y:1, z:1},
+				animationDuration:1000
+			};
+
+			const s = scale.add(person.scale, 'x', 0, 10)
+				.onChange(s=>l.animateTo({
+					scale:person.scale, 
+					easing:t=>t,
+					duration:person.animationDuration
+				}))
+			const b = rotation.add(person, 'bearing', 0, 360)
+				.onChange(v=>l.animateTo({
+					bearing:v, 
+					duration:person.animationDuration
+				}))
+			const p = gui.add(person, 'pitch', 0, 360)
+				.onChange(v=>l.animateTo({pitch:v}))
+
+			const r = gui.add(person, 'roll', 0, 360);
+			const d = gui.add(person, 'animationDuration', 1, 5000)
+				.onChange(s=>{person.animationDuration = s})
+
+		</script>
+		
+	</body>
+</html>

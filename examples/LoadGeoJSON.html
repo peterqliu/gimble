@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>test</title>
+		<!-- <link rel='stylesheet' href='style.css'/> -->
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='assets/style.js'></script>
+		<script src='utils/stats.min.js'></script>
+
+		<script>
+
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			var sf = new gimble.Map({
+
+				container: 'map',
+				background:'#eed',
+				onLoop: () => stats.update(),
+
+			})
+
+			gimble.geojson(
+				'./assets/panamaCanal.geojson', 
+				r => {
+					console.log(r)
+					const canal = gimble.Line(r, {
+						color: 'blue',
+						height:999,
+						width:819
+					})
+					console.log(canal)
+					sf.add(canal)
+				}
+			)
+
+		</script>
+		
+	</body>
+</html>

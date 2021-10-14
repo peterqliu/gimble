@@ -1,0 +1,68 @@
+<html>
+	<head>
+		<title>test</title>
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='utils/stats.min.js'></script>
+
+		<script>
+			
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			var map = new gimble.Map({
+				container: 'map',
+				background:'#eed',
+				hash: true,
+				onLoop: ()=>stats.update()
+			})
+
+			gimble.geojson('assets/world.geojson', r => {
+
+				// iterate over features individually so they can be
+				// colored and animated individually later
+				r.features.forEach( f => {
+
+					const country = new gimble.Extrusion(f, {
+						height:100000,
+						color: Math.random() * 0xffffff,
+						radius: 20000
+					})
+
+					map.add(country)
+
+				})
+			})
+
+
+			var activeCountry;
+			map.on('mousemove', e => {
+
+				const int = map.intersect(e, map.world.children)[0]
+
+				if (int) {
+
+					if (int.object.uuid !== activeCountry?.uuid) {
+
+						int.object.animateTo({
+							scale: {x:1, y:1, z:5}, 
+							duration:100
+						})
+
+						activeCountry?.animateTo?.({scale:1})
+						activeCountry = int.object
+					}
+
+				}
+			})
+
+		</script>
+		
+	</body>
+</html>

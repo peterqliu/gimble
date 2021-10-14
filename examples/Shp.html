@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>test</title>
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='utils/stats.min.js'></script>
+		<script src='https://unpkg.com/shpjs@latest/dist/shp.js'></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js'></script>
+		<script>
+			
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			var map = new gimble.Map({
+				container: 'map',
+				background:'#eed',
+				onLoop: () => stats.update()
+			})
+
+			// use shapefile-js to download shapefile and
+			// convert it to geojson 
+			// (https://github.com/calvinmetcalf/shapefile-js)
+
+			shp("https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_coastline.zip")
+				.then(geojson=>{
+					new gimble.Line(geojson, {width:30, color:'orangered'}).addTo(map)
+				});
+
+			// shp("https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_populated_places_simple.zip")
+			// 	.then(geojson=>{
+			// 		map.add(new gimble.Label(geojson, {text:p=>p.name}))
+			// 	});
+
+			// fetch a KML and use toGeoJSON to parse
+			// fetch('./assets/cb_2018_us_state_20m.kml')
+			// 	.then(r=>r.text())
+			// 	.then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+			// 	.then(data => {
+
+			// 		console.log(toGeoJSON.kml(data))
+			// 		map.add(new gimble.Line(toGeoJSON.kml(data)))
+			// 	});
+
+		</script>
+		
+	</body>
+</html>

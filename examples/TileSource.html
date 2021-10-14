@@ -1,0 +1,123 @@
+<html>
+	<head>
+		<title>test</title>
+		<!-- <link rel='stylesheet' href='style.css'/> -->
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='utils/stats.min.js'></script>
+
+		<script>
+
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			var map = new gimble.Map({
+
+				container: 'map',
+				center:[-77.03681945800781, 38.90506061276737],
+				zoom:10,
+				background:'#eed',
+				onLoop: () => stats.update(),
+
+			})
+
+			const desiredArea = {
+		        "type": "Polygon",
+		        "coordinates": [
+				  [
+				    [
+				      -77.03681945800781,
+				      38.90506061276737
+				    ],
+				    [
+				      -77.0526123046875,
+				      38.889830315871485
+				    ],
+				    [
+				      -77.03561782836913,
+				      38.877804090072004
+				    ],
+				    [
+				      -77.02119827270508,
+				      38.89143365883688
+				    ],
+				    [
+				      -77.03681945800781,
+				      38.90506061276737
+				    ]
+				  ]
+				]
+		    }
+		    
+		    // draw line encircling the desired area
+		    map.add(new gimble.Line(desiredArea, {width:1, renderOrder:2, color:'red'}))
+
+			const source = new gimble.TileSource({
+				
+				type: 'vector',
+				tiles: 'https://tegola-osm-demo.go-spatial.org/v1/maps/osm/{z}/{x}/{y}.pbf',
+
+			})
+			.loadArea(
+				{zoom:14, geojson: desiredArea, maxTiles:20}, 
+				{
+					// output: 'geojson',
+					onAllTiles: tileArray => console.log('All tiles have loaded: ', tileArray),
+					onTile: t => {
+
+					console.log(t)
+
+					map.add(new gimble.Fill(t.layers.land, {
+						radius:99, 
+						width:10, 
+						height:1, 
+						color:'tan'
+					}))
+					.add(new gimble.Extrusion(t.layers.buildings, {
+						width:10, 
+						height:30, 
+						color:'#fee'
+					}))
+					.add(new gimble.Extrusion(
+						t.layers.landuse_areas
+							.filterFeatures(p=>p.type ==='water'), 
+						{
+							height:2, 
+							color: '#abcdef'
+						}
+					))
+					.add(new gimble.Extrusion(t.layers.landuse_areas, {
+						height: 1, 
+						color: 'green'
+					}))
+					// .add(
+					// 	gimble.Label(
+					// 		t.layers.amenity_points, 
+					// 		{
+					// 			text:p=>p.name,
+					// 			zoomScaled: true,
+					// 			haloColor: '#eed',
+					// 			haloWidth:1,
+					// 			size:10,
+					// 			translation: {x:0, y:0, z:50},
+					// 			color: 'brown',
+					// 			maxWidth:10
+					// 		}
+					// ))
+
+
+
+
+				}}
+			);
+
+		</script>
+		
+	</body>
+</html>

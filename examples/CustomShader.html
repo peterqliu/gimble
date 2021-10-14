@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>Use a custom shader material</title>
+		<!-- <link rel='stylesheet' href='style.css'/> -->
+		<style>
+			body { margin: 0; padding:0; overflow:hidden}
+			#map { position:absolute; height:100%; width:100%; overflow:hidden}
+		</style>
+	</head>
+	<body>
+		<div id='map'></div>
+		<script src='../dist/gimble.min.js'></script>
+		<script src='utils/stats.min.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/dat.gui@0.7.7/build/dat.gui.min.js'></script>
+		<script>
+			
+			stats = new Stats();
+			document.body.appendChild( stats.dom );
+
+			var map = new gimble.Map({
+				container: 'map',
+				background:'#eed',
+				onLoop: () => stats.update()
+			})
+
+			var sphere = new gimble.Sphere(
+				{
+					"type": "Feature",
+					"properties": {},
+					"geometry": {
+						"type": "Point",
+						"coordinates": [0,0,0]
+					}
+				},
+				{
+					radius: 9999999
+				}
+			).addTo(map)
+
+			// change material of sphere to a custom ShaderMaterial
+			// (https://threejs.org/docs/#api/en/materials/ShaderMaterial)
+			sphere.material = new THREE.ShaderMaterial({
+
+				// add a uniform to store the current time.
+				// this value will automatically pass to the fragment shader
+
+				uniforms:{
+					time: {value:0}
+				},
+
+				// vertex shader takes time uniform and
+				// translate the sphere based on a sine function of time
+				// along all three axes
+
+				vertexShader: `
+					uniform float time;
+					void main() {
+
+						float positionOffset = sin(time) * 9999999.0;
+						gl_Position = projectionMatrix * modelViewMatrix * scaleMatrix * vec4(position + positionOffset, 1.0);
+					}
+				`,
+
+				// fragment shader will take the time uniform
+				// and set an RGBA color based on trig functions of that value
+				fragmentShader: `
+					uniform float time;
+					void main() {
+						gl_FragColor = vec4(sin(time), cos(time), tan(time), 1.0);
+					}`
+			})
+
+			// update the time value on every frame
+			
+			const updateTime = () => {
+
+				sphere.material.uniforms.time.value = 0.001 * Date.now()%10000;
+				map.render();
+
+				requestAnimationFrame(updateTime)
+			}
+
+			updateTime()
+		</script>
+		
+	</body>
+</html>
