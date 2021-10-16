@@ -81,9 +81,9 @@ const methods = {
 	// calculate endMatrix,
 	// and schedule scene rerender
 
-	_update() {
+	_update(skipMatrixUpdate) {
 
-		this.updateMatrix();
+		if (!skipMatrixUpdate) this.updateMatrix();
 		this.renderLoop?.rerender()
 
 	},
@@ -162,6 +162,28 @@ const methods = {
 
 		return this;
 
+	},
+
+	setOpacity(opacity) {
+
+		if (this.constructor.name === 'CircleMesh') {
+			for (var c = 0; c<this.count; c++)this.setUniformAt('opacity', c, opacity)	
+		}
+		
+		else this.traverse(child=>{
+
+			if (child.material) {
+
+				child.material.opacity = opacity;
+				if (child.material.uniforms) child.material.uniforms.opacity.value = opacity
+				child.material.transparent = opacity !== 1;
+
+			}
+		})
+
+		// schedule rerender without matrix update
+		this._update(false);
+		return this
 	},
 
 	setTarget(mc) {

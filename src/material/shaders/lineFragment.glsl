@@ -10,6 +10,6 @@ void main() {
 		gl_FragColor = vec4(vColor, opacity);
 	
 	#else
-		gl_FragColor = vec4(lineColor, 1.0);
+		gl_FragColor = vec4(lineColor, opacity);
 	#endif
 }

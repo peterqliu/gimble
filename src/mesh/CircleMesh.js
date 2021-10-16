@@ -26,9 +26,8 @@ export default class CircleMesh extends InstancedUniformsMesh {
 			this.setMatrixAt(i, utils.composeMatrix(rawGeometry[i].g));
 			this.setColorAt(i, new Color(circleStyle.color || style.color));
 
-			// set per-instance values of size 1 per instance
-			(['radius', 'strokeWidth', 'strokeColor'])
-				.forEach(property => this.setUniformAt(property, i, circleStyle[property]))
+			(['radius', 'strokeWidth', 'strokeColor', 'opacity'])
+				.forEach(property => this.applyUniform(style[property], circleStyle[property], property, i))
 
 		}
 
@@ -42,11 +41,20 @@ export default class CircleMesh extends InstancedUniformsMesh {
 
 	}
 
-	setZoomLevel(z) {
+	// apply properties as uniform values. if literal, apply as a single material uniform.
+	// if function, use InstancedUniformMesh's .setUniformAt()
+	applyUniform(rawValue, computedValue, property, i) {
+		
+		if (typeof rawValue === 'function') this.setUniformAt(property, i, computedValue)
+		else this.material.uniforms[property].value = computedValue;
 
-		methods.setZoomLevel.call(this, z);
-		return this
 	}
+
+	// setZoomLevel(z) {
+
+	// 	methods.setZoomLevel.call(this, z);
+	// 	return this
+	// }
 }
 
 function makeCircleMaterial(style) {
@@ -60,3 +68,5 @@ function makeCircleMaterial(style) {
 
 }
 const plane = new PlaneGeometry();
+
+Object.assign(CircleMesh.prototype, methods)

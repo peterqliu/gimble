@@ -1,5 +1,5 @@
 uniform float radius;
-
+uniform float opacity;
 uniform float strokeWidth;
 uniform vec3 strokeColor;
 uniform float blur;
@@ -16,6 +16,7 @@ varying vec3 vStrokeColor;
 varying vec3 vPos;
 varying vec3 vColor;
 varying float vBlur;
+varying float vOpacity;
 
 varying float vAAFraction;
 
@@ -25,6 +26,7 @@ void main() {
 	vStrokeColor = strokeColor;
 	vBlur = blur;
 	vPos = position;
+	vOpacity = opacity;
 
 	float totalScaleFactor = radius + strokeWidth;
 
