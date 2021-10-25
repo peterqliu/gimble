@@ -17,8 +17,9 @@ export default class CircleMesh extends InstancedUniformsMesh {
 	constructor(rawGeometry, style) {
 
 		super(plane, makeCircleMaterial(style), rawGeometry.length);
+		this.properties = [];
 
-		for (var i = 0; i<rawGeometry.length; i++) {
+		this.iterateInstances(i => {
 
 			const circleStyle = rawGeometry[i].s;
 			circleStyle.strokeColor = new Color(circleStyle.strokeColor);
@@ -29,8 +30,10 @@ export default class CircleMesh extends InstancedUniformsMesh {
 			(['radius', 'strokeWidth', 'strokeColor', 'opacity'])
 				.forEach(property => this.applyUniform(style[property], circleStyle[property], property, i))
 
-		}
+			this.properties[i] = rawGeometry[i].p
+		})
 
+		this.style = style;
 		this.instanceMatrix.needsUpdate = true;
 		this.instanceColor.needsUpdate = true;
 
@@ -50,6 +53,59 @@ export default class CircleMesh extends InstancedUniformsMesh {
 
 	}
 
+	iterateInstances(fn) {
+		for (var j = 0; j<this.count; j++) fn(j)
+	}
+
+	set color(c) {
+		this.style.color = c;
+		methods.setColor.call(this, c)	
+	}
+
+	set radius(r) {
+
+		this.style.radius = r
+
+		this.iterateInstances(i => {
+			const computed = methods.computeValue(r, this.properties[i])
+			this.setUniformAt('radius', i, computed)
+		})
+
+		this.renderLoop?.rerender();
+
+	}
+
+	set strokeColor(c) {
+
+		this.style.strokeColor = c;
+
+		this.iterateInstances(i => {
+			const computed = methods.computeValue(c, this.properties[i])
+			this.setUniformAt('strokeColor', i, new Color(computed))
+		})
+
+		this.renderLoop?.rerender();	
+
+	}
+
+	set strokeWidth(c) {
+
+		this.style.strokeWidth = c;
+		this.iterateInstances(i => {
+			const computed = methods.computeValue(c, this.properties[i])
+			this.setUniformAt('strokeWidth', i, computed)
+		})
+
+		this.renderLoop?.rerender();
+
+	}
+
+	set opacity (o) {
+		this.style.opacity = o;
+		methods.setOpacity.call(this, o)
+	}
+
+
 	// setZoomLevel(z) {
 
 	// 	methods.setZoomLevel.call(this, z);
@@ -57,6 +113,13 @@ export default class CircleMesh extends InstancedUniformsMesh {
 	// }
 }
 
+const validation = {
+
+	radius:{
+		type: ['number'],
+		value: v => v >= 0
+	}
+}
 function makeCircleMaterial(style) {
 
 	const material = new CircleMaterial();

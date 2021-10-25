@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import {TextureLoader} from 'three'
 
+import BasicMesh from '../mesh/BasicMesh.js'
 import BasicObject from '../mesh/BasicObject'
 
 export const loadOBJ = (o, cb) => {
@@ -26,7 +27,12 @@ export const loadOBJ = (o, cb) => {
 }
 
 const normalizeModel = (obj, normalize) => {
+	console.log(obj.children)
+	// const bM = new BasicMesh();
 
+	// obj.children.forEach(c=>bM.add(c))
+	// console.log(bM.children)
+	// // return bM
 	return new BasicObject(obj)
 		.transformGeometry(normalize)	
 }

@@ -10,13 +10,12 @@ import {deepParse} from '../workerPool.js'
 import StyleObject from '../ui/StyleObject.js'
 
 import BasicMesh from '../mesh/BasicMesh.js';
-import BasicObject from '../mesh/BasicObject.js'
 
 import CircleMesh from '../mesh/CircleMesh.js';
 import LabelMesh from '../mesh/LabelMesh.js';
 import LineMaterial from '../material/LineMaterial.js';
 
-import {BufferGeometry, Vector3, Color, MeshLambertMaterial } from 'three'
+import {BufferGeometry, Vector3, Color, MeshLambertMaterial, Group } from 'three'
 
 import constant from '../core/constants.js'
 import GeometryLike from '../geometry/GeometryLike.js'
@@ -68,6 +67,8 @@ export class Primitive extends BasicMesh{
 
 		const style = new StyleObject(styleObj)
 			.applyDefaults(type);
+		var geom = new GeometryLike(g)
+			.prepareForType(type, style)
 
 		const d = {
 			layerType: type,
@@ -77,31 +78,31 @@ export class Primitive extends BasicMesh{
 			style: style			
 		}
 
-		const layer = d.layerType;
-
 		if (type === 'label' ) {
-			const output = d.geometry
-				.map(v3f => {
-					if (typeof d.style.color !== 'function') v3f.s.color = d.style.color
-					return new LabelMesh(v3f, v3f.s)
+
+
+			geom
+				.forEach(v3f => {
+					if (typeof style.color !== 'function') v3f.s.color = style.color
+					// v3f.s = new StyleObject(v3f.s).applyDefaults('label');
 				})
 
-			return output
+			return new LabelMesh(d)
 		}
 
-		else if (type === 'circle') return new CircleMesh(d.geometry, d.style)
+		else if (type === 'circle') return new CircleMesh(geom, style)
 
 
 
 		// otherwise, build geometries of each feature and merge them into one
-		const geom = d.geometry.length === 1 ? geometry[type](...d.geometry) : 
+		geom = geom.length === 1 ? geometry[type](...geom) : 
 		BufferGeometryUtils.mergeBufferGeometries(
-			d.geometry.map((f,i) => geometry[type](f, i))
+			geom.map((f,i) => geometry[type](f, i))
 		)
 
-		const m = new BasicMesh(geom, makeMaterial(type, d.style))
+		const m = new BasicMesh(geom, makeMaterial(type, style))
 			.create(d)
-
+		m.style = style;
 		return m
 
 	}
@@ -163,6 +164,7 @@ export class Primitive extends BasicMesh{
 	}
 }
 
+
 // unlike others, circles are actually InstancedUniformsMesh, hence the return statement.
 // copying from Primitive only for data transformation methods
 export class Circle extends Primitive {
@@ -200,7 +202,10 @@ export class Line extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('line', g, styleObj));
+		const line = this.fromData('line', g, styleObj);
+		this.copy(line);
+
+		this.style = line.style;
 
 	}
 }
@@ -210,8 +215,9 @@ export class Fill extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('fill', g, styleObj));
-
+		const fill = this.fromData('fill', g, styleObj);
+		this.copy(fill);
+		this.style = fill.style;
 	}
 }
 
@@ -220,7 +226,8 @@ export class Extrusion extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('extrusion', g, styleObj));
-
+		const extrusion = this.fromData('extrusion', g, styleObj);
+		this.copy(extrusion);
+		this.style = extrusion.style;
 	}
 }

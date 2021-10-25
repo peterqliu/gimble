@@ -28,26 +28,24 @@ void main() {
 	vPos = position;
 	vOpacity = opacity;
 
-	float totalScaleFactor = radius + strokeWidth;
+	float totalRadius = radius + strokeWidth;
 
 	// determine threshold at which core ends and stroke begins
-	vCoreRatio = radius / totalScaleFactor;
+	vCoreRatio = radius / totalRadius;
 
 	float inverseZoomScale = pow(2.0, 22.0 - zoom) / viewportSize.y;
 
 	// non-zoomscaled means applying opposite scale factor to keep circle size constant
 	float zoomScale = zoomScaled == 0 ?  1.0 : inverseZoomScale;
 
+	// scale antialiasfraction with zoom and camera distance (which is really about world width), divided by the whole size of circle
+	vAAFraction = - (viewMatrix[3][2]/5000000.0) * zoomScale / totalRadius;
 
-	vAAFraction = 25.0 * zoomScale / totalScaleFactor;
-	// vAAFraction = antialiasAmount;
-
-	if (zoomScaled == 0) totalScaleFactor = totalScaleFactor * inverseZoomScale;
+	if (zoomScaled == 0) totalRadius *= inverseZoomScale;
 
 	// increase scale slightly to account for antialiased blurring
-	totalScaleFactor *= (1.0 + vAAFraction);
+	totalRadius *= (1.0 + vAAFraction);
 
-	// assumes use with InstanceMesh only! (includes instanceMatrix)
-	gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * billboardMatrix * vec4(position.xyz * totalScaleFactor, 1.0);
+	gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * billboardMatrix * vec4(position.xyz * totalRadius, 1.0);
 
 }

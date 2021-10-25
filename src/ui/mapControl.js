@@ -200,7 +200,7 @@ export const MapAnimation = {
 			}
 		)
 
-		MapAnimation._setWorldCameraStartStates();
+		MapAnimation._setWorldCameraStartStates.call(this);
 
 		return this
 	},
@@ -225,7 +225,7 @@ export const MapAnimation = {
 			.stop.call(this, progress)
 			.animating = false;
 
-		this.loop.rerender();
+		this.coreLoop.rerender();
 
 		return this
 

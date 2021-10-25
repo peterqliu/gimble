@@ -35,4 +35,7 @@ export default class CircleMaterial extends ShaderMaterial {
 
 		})
 	}
+
+
+
 }

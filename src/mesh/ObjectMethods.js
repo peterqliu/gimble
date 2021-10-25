@@ -1,7 +1,7 @@
 // common methods for all primitives that
 // need to be passed to some classes that already inherit from other classes
 
-import {MathUtils, Matrix4, Vector3, Euler, Quaternion} from 'three';
+import {MathUtils, Matrix4, Vector3, Euler, Quaternion, Color} from 'three';
 import {LngLat, Mercator} from '../coordMath.js'
 import AnimationOptions from '../ui/AnimationOptions.js';
 import state from '../core/state.js'
@@ -45,9 +45,10 @@ const methods = {
 			positionDelta = m.clone().sub(this.position);
 		}
 
-		this.geometry.translate(-positionDelta.x, -positionDelta.y, 0);
+		this.geometry.translate(-positionDelta.x, -positionDelta.y, -positionDelta.z);
 		this.setPosition(m);
-		
+					console.log(this.position)
+
 		return this
 	},
 
@@ -164,26 +165,90 @@ const methods = {
 
 	},
 
-	setOpacity(opacity) {
+	setColor(color) {
 
-		if (this.constructor.name === 'CircleMesh') {
-			for (var c = 0; c<this.count; c++)this.setUniformAt('opacity', c, opacity)	
+		var rgb = new Color(color);
+		switch (this.constructor.name) {
+
+			case 'CircleMesh':
+
+				this.iterateInstances(c => {
+
+					const computed = this.computeValue(color, this.properties[c])
+					rgb = new Color(computed);
+
+					this.setColorAt(c, rgb)
+				})	
+				this.instanceColor.needsUpdate = true;
+
+				break;
+
+			case 'LabelMesh':
+
+				this.children
+					.forEach(child=>{
+						const computed = this.computeValue(color, child.properties)
+						rgb = new Color(computed);
+						child.color = rgb
+					})
+
+				break;
+
+			default:
+				this.traverse(child => {
+
+					if (child.material) child.material.color = rgb;
+
+				})			
 		}
-		
-		else this.traverse(child=>{
-
-			if (child.material) {
-
-				child.material.opacity = opacity;
-				if (child.material.uniforms) child.material.uniforms.opacity.value = opacity
-				child.material.transparent = opacity !== 1;
-
-			}
-		})
 
 		// schedule rerender without matrix update
 		this._update(false);
 		return this
+	},
+
+	setOpacity(opacity) {
+
+		switch (this.constructor.name) {
+
+			case 'CircleMesh':
+
+				for (var c = 0; c<this.count; c++){
+					const computed = this.computeValue(opacity, this.properties[c])
+					this.setUniformAt('opacity', c, computed)
+				}	
+
+				break;
+
+			case 'LabelMesh':
+				console.log(this.children.length)
+				this.children.forEach(child=>child.material[1].opacity = opacity)
+				// this.material.opacity = opacity;
+				// this.material.transparent = opacity !== 1;
+				break;
+
+			default:
+				this.traverse(child => {
+
+					if (child.material) {
+
+						child.material.opacity = opacity;
+						child.material.transparent = opacity !== 1;
+
+					}
+				})			
+		}
+
+		// schedule rerender without matrix update
+		this._update(false);
+		return this
+	},
+
+	computeValue(v, p) {
+
+		if (typeof v !== 'function') return v
+		else return v(p)
+
 	},
 
 	setTarget(mc) {
@@ -222,9 +287,6 @@ const methods = {
 		const ao = new AnimationOptions(options, objectAnimationDefaults, onCompletion)
 			.copyStartState(this)
 
-
-		// set start matrix uniform
-
 		ao.wasCulling = this.frustumCulled;
 
 		// tells renderer to keep rendering til at least this animation completes
@@ -236,10 +298,10 @@ const methods = {
 		const c = methods.coalesceTransform
 			.call(this, options, 'omitDefaults')
 		
-		ao.endState = c;
-
 		Object.keys(c)
 			.forEach(p => this[p].copy(c[p]))		
+
+		ao.endState = Object.assign(c, {opacity: options.opacity});
 
 		ao.endMatrix = new Matrix4()
 			.compose(c.position || this.position, c.quaternion || this.quaternion, c.scale || this.scale);
@@ -265,10 +327,10 @@ const methods = {
 		const c = methods.coalesceTransform
 			.call(this, options, 'omitDefaults')
 
-		ao.endState = c;
-
 		Object.keys(c)
 			.forEach(p => this[p].copy(c[p]))		
+
+		ao.endState = Object.assign(c, {opacity: options.opacity});
 
 		ao.endMatrix = new Matrix4()
 			.compose(c.position || this.position, c.quaternion || this.quaternion, c.scale || this.scale);
@@ -295,8 +357,14 @@ const methods = {
 			console.warn('setScrubber: no scrub animation is currently set.')
 			return
 		}
-		const matrix = this.animator.animateMatrix(progress);
-		this.matrix.copy(matrix)
+
+		const prorated = this.animator.proratePiecewise(progress);
+
+		if (prorated.opacity ?? false) {
+			this.setOpacity(prorated.opacity)
+		}
+
+		this.matrix.compose(...prorated.matrix)
 		this.renderLoop.rerender();
 		return this
 
@@ -310,7 +378,7 @@ const methods = {
 
 			a.terminate(this);
 
-			const prorated = a.proratePiecewise();
+			const prorated = a.proratePiecewise().matrix;
 			([this.position, this.quaternion, this.scale])
 				.forEach((p,i)=>p.copy(prorated[i]))
 

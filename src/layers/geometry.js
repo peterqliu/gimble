@@ -117,7 +117,7 @@ const extrusionGeometry = (ft, index) => {
 	
 	ft.s.depth = ft.s.height;
 	const g = new THREE.ExtrudeGeometry(ft._makeShape(), ft.s);
-	// g.translate(0,0, ft.s.height/2);
+	// g.translate(0,0, ft.s.height);
 
 	const geom = applyFeatureIndex
 		.call(

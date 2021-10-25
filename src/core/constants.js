@@ -1,9 +1,8 @@
 import * as THREE from 'three'
 
 const constant = {
-	eventBuffer: 10,
+
 	worldWidth: 40075000,
-	// metersPerUnit: () => 6371000/constants.worldWidth,
 	mercatorRange: {
 		lng: 180,
 		lat: 85.05113
@@ -39,7 +38,7 @@ const constant = {
 		translation: undefined,
 		zoomLevel: undefined,
 
-		opacity: undefined,
+		opacity: 1,
 		lineWidth: 1, 
 		
 		base: 0,
@@ -56,7 +55,7 @@ const constant = {
 		size: 10, 
 		align: 'center',
 		anchorX: 'center',
-		anchorY: 'center',
+		anchorY: 'middle',
 		maxWidth: 10,
 		haloWidth: 0,
 		haloColor: 'white',

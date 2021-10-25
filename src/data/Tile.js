@@ -39,7 +39,6 @@ export default class Tile {
 				.then(response => {
 
 					const buffer = new Pbf(response);
-					console.log(buffer)
 
 					this.tile = new vectorTile(buffer);
 					this.tile.zxy = d.zxy;
