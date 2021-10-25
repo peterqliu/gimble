@@ -35,16 +35,17 @@ void main() {
 
 	float inverseZoomScale = pow(2.0, 22.0 - zoom) / viewportSize.y;
 
-	// non-zoomscaled means applying opposite scale factor to keep circle size constant
-	float zoomScale = zoomScaled == 0 ?  1.0 : inverseZoomScale;
+	// antialising amount needs to scale down as we zoom in
+	float AAScale = zoomScaled == 0 ?  1.0 : inverseZoomScale;
 
 	// scale antialiasfraction with zoom and camera distance (which is really about world width), divided by the whole size of circle
-	vAAFraction = - (viewMatrix[3][2]/5000000.0) * zoomScale / totalRadius;
+	vAAFraction = - (viewMatrix[3][2]/5000000.0) * AAScale / totalRadius;
 
+	// if scaled independently of zoom, apply compensatory scaling to keep circles at constant size
 	if (zoomScaled == 0) totalRadius *= inverseZoomScale;
 
 	// increase scale slightly to account for antialiased blurring
-	totalRadius *= (1.0 + vAAFraction);
+	totalRadius *= 1.0 + vAAFraction;
 
 	gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * billboardMatrix * vec4(position.xyz * totalRadius, 1.0);
 

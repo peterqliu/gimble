@@ -100,17 +100,33 @@ export default class CircleMesh extends InstancedUniformsMesh {
 
 	}
 
-	set opacity (o) {
+	set opacity(o) {
 		this.style.opacity = o;
 		methods.setOpacity.call(this, o)
 	}
 
+	set billboard(b) {
 
-	// setZoomLevel(z) {
+		const matrix = b ? state.uniforms.cameraRotationMatrix : {value: new Matrix4()}
+		this.material.uniforms.billboardMatrix = matrix;
+		this.renderLoop?.rerender();
+		
+	}
 
-	// 	methods.setZoomLevel.call(this, z);
-	// 	return this
-	// }
+	set zoomScaled(z) {
+		this.material.uniforms.zoomScaled = {value: z ? 1 : 0}
+		this.renderLoop?.rerender();
+	}
+
+	get billboard() {return this.style.billboard}
+	get zoomScaled() {return this.style.zoomScaled}
+	get opacity() {return this.style.opacity}
+	get strokeWidth() {return this.style.strokeWidth}
+	get strokeColor() {return this.style.strokeColor}
+	get radius() {return this.style.radius}
+	get color() {return this.style.color}
+
+
 }
 
 const validation = {
@@ -118,6 +134,10 @@ const validation = {
 	radius:{
 		type: ['number'],
 		value: v => v >= 0
+	},
+
+	billboard: {
+		type: ['boolean']
 	}
 }
 function makeCircleMaterial(style) {
