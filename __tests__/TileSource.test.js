@@ -1,7 +1,8 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import TileSource from '../src/tile/TileSource.js'
-
-
-
 
 describe('Instantiate TileSource', () => {
 

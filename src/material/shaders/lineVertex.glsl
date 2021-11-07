@@ -2,10 +2,13 @@ attribute float lineWidth;
 attribute float lineMiter;
 
 attribute vec2 lineNormal;
+// attribute vec3 color;
 // varying float edge;
 
 varying vec3 vColor;
 
+
+uniform vec3 u_color;
 uniform vec2 viewportSize;
 uniform float pixelRatio;
 

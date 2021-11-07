@@ -1,17 +1,17 @@
-uniform float opacity;
 varying vec3 vColor;
 
 varying vec3 vPos;
-
+uniform vec3 color;
 varying float vCoreRatio;
 varying float vAAFraction;
 varying vec3 vStrokeColor;
 varying float vBlur;
+varying float vOpacity;
+
 void main() {
 	
 
     // fragment position, and its distance from center
-    vec2 coord = vPos.xy; // u_resolution;
     float l = length(vPos.xy);
 
     // determine amount to blur, given a minimum antialiasing amount
@@ -28,7 +28,11 @@ void main() {
     	clamp((l - startAntialias) / blurFraction, 0.0, 1.0)
     );
 
-	float opacity = mix(1.0, 0.0, ( 2.0 * l - 1.0 + blurFraction) / blurFraction);
+	float opacity = vOpacity * mix(
+		1.0, 
+		0.0, 
+		clamp(( 2.0 * l - 1.0 + blurFraction) / blurFraction, 0.0, 1.0)
+	);
 
     gl_FragColor = vec4( pxColor, opacity );
 

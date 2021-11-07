@@ -1,3 +1,8 @@
+/**
+ * @jest-environment jsdom
+ */
+
+
 import {manualRequest} from '../src/tile/tileManager.js'
 
 describe('manualRequest', ()=>{

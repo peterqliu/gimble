@@ -13,13 +13,13 @@ export default class LineMaterial extends ShaderMaterial {
 			side:2,
 			transparent: true,
 			uniforms: {
-				lineColor: {value: new Color(1,1,1)},
+				u_color: {value: new Color('red')},
 				zoom: state.uniforms.zoom,
 				opacity: { value: 1 },
 
 				viewportSize: state.uniforms.viewportSize,
 				pixelRatio: state.uniforms.pixelRatio,
-				
+
 				// world animation
 				now: state.uniforms.now,
 
@@ -46,6 +46,15 @@ export default class LineMaterial extends ShaderMaterial {
 			fragmentShader: lineFragment
 
 		})
+	}
+
+	// automatically set uniform opacity from general opacity property
+	set opacity(o) {
+		if (this.uniforms) this.uniforms.opacity.value = o
+	}
+
+	get opacity() {
+		return this.uniforms.opacity.value
 	}
 }
 

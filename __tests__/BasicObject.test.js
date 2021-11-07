@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 
 import BasicObject from '../src/mesh/BasicObject.js'
 import {Mercator} from '../src/coordMath.js'

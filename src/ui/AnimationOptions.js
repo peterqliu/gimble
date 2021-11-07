@@ -34,6 +34,7 @@ export default class AnimationOptions {
 				duration: 250,
 				pitch: undefined,
 				bearing: undefined,
+				opacity: undefined,
 				queue: [],
 				easing: t => MathUtils.smoothstep(t, 0, 1)
 
@@ -111,10 +112,14 @@ export default class AnimationOptions {
 
 	// copy the start transforms of an object
 	copyStartState(target) {
+
 		this.startState = {
 			position: target.position.clone(), 
 			quaternion: target.quaternion.clone(), 
-			scale: target.scale.clone()
+			scale: target.scale.clone(),
+
+			// TODO make opacities work for Circles (InstancedUniformsMesh)
+			opacity: target.material?.opacity
 		}
 
 		return this
@@ -136,7 +141,18 @@ export default class AnimationOptions {
 		// if animation keeps going, lerp it from the start and end matrices.
 		// model matrix will fall out of sync with p/s/r (which jumped instantly to end states) during animation
 		
-		else mesh.matrix.copy(this.animateMatrix())
+		else {
+
+			const prorated = this.proratePiecewise();
+			mesh.matrix.compose(...prorated.matrix);
+
+			if (prorated.opacity ?? false) {
+
+				mesh.material.transparent = true;
+				mesh.material.opacity = prorated.opacity
+			}
+
+		}
 		
 	}
 
@@ -165,23 +181,11 @@ export default class AnimationOptions {
 		const Q = e.quaternion ? s.quaternion.clone().slerp(e.quaternion, progress) : s.quaternion;
 		const S = e.scale ? new Vector3().lerpVectors(s.scale, e.scale, progress) : s.scale;
 
-		return [P, Q, S]
-	}
-
-	// apply interpolated properties and builds matrix
-	animateMatrix(progress) {
-
-		const [P, Q, S] = this.proratePiecewise(progress);
-
-		// apply intermediate states
-
-		const matrix = new Matrix4()
-			.setPosition(P)
-			.multiply(new Matrix4().makeRotationFromQuaternion(Q))
-			.multiply(new Matrix4().makeScale(S.x, S.y, S.z))
-
-		return matrix
-
+		// unlike other transforms, opacity calculation is not required when it doesn't change.
+		// value will return undefined in such situations
+		const O = 'opacity' in e ? MathUtils.lerp(s.opacity, e.opacity, progress) : undefined
+		
+		return {matrix: [P, Q, S], opacity: O}
 	}
 
 

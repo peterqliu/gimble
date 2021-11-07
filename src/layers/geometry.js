@@ -117,27 +117,18 @@ const extrusionGeometry = (ft, index) => {
 	
 	ft.s.depth = ft.s.height;
 	const g = new THREE.ExtrudeGeometry(ft._makeShape(), ft.s);
-	// g.translate(0,0, ft.s.height/2);
+	// g.translate(0,0, ft.s.height);
+	applyColorAlpha.call(g, ft.s)
 
-	const geom = applyFeatureIndex
-		.call(
-			applyColorAlpha.call(g, ft.s), 
-			index
-		)
 
-	
-	geom.userData = ft.p;
-
-	return geom
+	return g
 
 }
 
 const fillGeometry = (ft, index) => {
 	
-	const geometry = applyFeatureIndex.call(
-		applyColorAlpha.call(new THREE.ShapeGeometry(ft._makeShape()), ft.s),
-		index
-	)
+	const geometry = applyColorAlpha.call(new THREE.ShapeGeometry(ft._makeShape()), ft.s)
+
 
 	return geometry
 

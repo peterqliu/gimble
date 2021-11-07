@@ -7,7 +7,7 @@ import {manualRequest} from './tile/tileManager'
 import TileSource from './tile/TileSource.js'
 import {loadOBJ} from './data/loader.js'
 
-import BasicObject from './mesh/BasicObject'
+// import BasicObject from './mesh/BasicObject'
 
 // expose three.js for users to access directly
 if (window) window.THREE = THREE;
@@ -31,7 +31,7 @@ const gimble = {
 	Circle,
 	
 	loadOBJ,
-	BasicObject
+	// BasicObject
 }
 
 

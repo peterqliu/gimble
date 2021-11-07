@@ -20,7 +20,7 @@
 				container: 'map',
 				background:'#eed',
 				hash: true,
-				onLoop: ()=>stats.update()
+				onLoop: () => stats.update()
 			})
 
 			gimble.geojson('assets/world.geojson', r => {
@@ -30,7 +30,7 @@
 				r.features.forEach( f => {
 
 					const country = new gimble.Extrusion(f, {
-						height:100000,
+						height:1,
 						color: Math.random() * 0xffffff,
 						radius: 20000
 					})

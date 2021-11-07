@@ -10,13 +10,12 @@ import {deepParse} from '../workerPool.js'
 import StyleObject from '../ui/StyleObject.js'
 
 import BasicMesh from '../mesh/BasicMesh.js';
-import BasicObject from '../mesh/BasicObject.js'
 
 import CircleMesh from '../mesh/CircleMesh.js';
 import LabelMesh from '../mesh/LabelMesh.js';
 import LineMaterial from '../material/LineMaterial.js';
 
-import {BufferGeometry, Vector3, Color, MeshLambertMaterial } from 'three'
+import {BufferGeometry, Vector3, Color, MeshLambertMaterial, Group } from 'three'
 
 import constant from '../core/constants.js'
 import GeometryLike from '../geometry/GeometryLike.js'
@@ -39,15 +38,14 @@ const makeMaterial = (layerType, style) => {
 
 		const color = new Color(style.color);
 
-		if (layerType === 'line') material.uniforms.lineColor.value = color;
+		if (layerType === 'line') material.uniforms.u_color.value = color;
 		else material.color = color
 
 	}	
 
 	// if opacity is literal and <1, 
-	if (literalOpacity && style.opacity<1) {
-		material.opacity = style.opacity
-	}
+	if (literalOpacity && style.opacity<1) material.opacity = style.opacity
+	
 
 	material.transparent = true;
 
@@ -68,6 +66,8 @@ export class Primitive extends BasicMesh{
 
 		const style = new StyleObject(styleObj)
 			.applyDefaults(type);
+		var geom = new GeometryLike(g)
+			.prepareForType(type, style)
 
 		const d = {
 			layerType: type,
@@ -77,31 +77,50 @@ export class Primitive extends BasicMesh{
 			style: style			
 		}
 
-		const layer = d.layerType;
-
 		if (type === 'label' ) {
-			const output = d.geometry
-				.map(v3f => {
-					if (typeof d.style.color !== 'function') v3f.s.color = d.style.color
-					return new LabelMesh(v3f, v3f.s)
+
+
+			geom
+				.forEach(v3f => {
+					if (typeof style.color !== 'function') v3f.s.color = style.color
+					// v3f.s = new StyleObject(v3f.s).applyDefaults('label');
 				})
 
-			return output
+			return new LabelMesh(d)
 		}
 
-		else if (type === 'circle') return new CircleMesh(d.geometry, d.style)
-
-
+		else if (type === 'circle') return new CircleMesh(geom, style)
 
 		// otherwise, build geometries of each feature and merge them into one
-		const geom = d.geometry.length === 1 ? geometry[type](...d.geometry) : 
+		const merged = geom.length === 1 ? geometry[type](...geom) : 
 		BufferGeometryUtils.mergeBufferGeometries(
-			d.geometry.map((f,i) => geometry[type](f, i))
+			geom.map((f,i) => geometry[type](f, i))
 		)
-
-		const m = new BasicMesh(geom, makeMaterial(type, d.style))
+		const m = new BasicMesh(merged, makeMaterial(type, style))
 			.create(d)
 
+
+		m.properties = {
+			indices: function() {
+
+				var start = 0;
+
+				return geom.map(ft=>{
+					
+					const output = {
+						start: start,
+						length:ft.g.length,
+					}
+
+					start += output.length;
+					return output
+				});
+
+			}(),
+			values: geom.map(ft=>ft.p)
+		}
+
+		m.style = style;
 		return m
 
 	}
@@ -163,6 +182,7 @@ export class Primitive extends BasicMesh{
 	}
 }
 
+
 // unlike others, circles are actually InstancedUniformsMesh, hence the return statement.
 // copying from Primitive only for data transformation methods
 export class Circle extends Primitive {
@@ -200,8 +220,20 @@ export class Line extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('line', g, styleObj));
+		const line = this.fromData('line', g, styleObj);
+		this.copy(line);
 
+		this.style = line.style;
+		this.properties = line.properties;
+	}
+
+	get width() { return this.style.width}
+
+	set width(w) {
+
+		this.geometry.attributes.lineWidth.array.fill(w);
+		line.geometry.attributes.lineWidth.needsUpdate = true
+		this.renderLoop?.rerender();
 	}
 }
 
@@ -210,8 +242,11 @@ export class Fill extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('fill', g, styleObj));
+		const fill = this.fromData('fill', g, styleObj);
+		this.copy(fill);
 
+		this.style = fill.style;
+		this.properties = fill.properties;
 	}
 }
 
@@ -220,7 +255,10 @@ export class Extrusion extends Primitive {
 	constructor(g, styleObj) {
 
 		super();
-		this.copy(this.fromData('extrusion', g, styleObj));
+		const extrusion = this.fromData('extrusion', g, styleObj);
+		this.copy(extrusion);
 
+		this.properties = extrusion.properties;
+		this.style = extrusion.style;
 	}
 }
