@@ -1,7 +1,7 @@
 varying vec3 vColor;
 
 varying vec3 vPos;
-
+uniform vec3 color;
 varying float vCoreRatio;
 varying float vAAFraction;
 varying vec3 vStrokeColor;
@@ -12,7 +12,6 @@ void main() {
 	
 
     // fragment position, and its distance from center
-    vec2 coord = vPos.xy; // u_resolution;
     float l = length(vPos.xy);
 
     // determine amount to blur, given a minimum antialiasing amount

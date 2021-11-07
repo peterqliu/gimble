@@ -15,11 +15,7 @@ export default class CircleMaterial extends ShaderMaterial {
 			uniforms: {
 
 				zoom: state.uniforms.zoom,
-				opacity: { value: 1 },
-				radius: {value:1},
 				blur: {value:0},
-				strokeWidth: {value: 0},
-				strokeColor:{value: new Vector3(1,1,1)},
 				viewportSize: state.uniforms.viewportSize,
 
 				billboardMatrix: state.uniforms.cameraRotationMatrix,

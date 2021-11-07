@@ -51,7 +51,7 @@ const constant = {
 		text: 'Text',
 		fontUrl: undefined,
 		billboard: true,
-		zoomScaled: false,
+		zoomScale: 1,
 		size: 10, 
 		align: 'center',
 		anchorX: 'center',

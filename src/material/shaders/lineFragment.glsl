@@ -1,15 +1,9 @@
 uniform float opacity;
 varying vec3 vColor;
-uniform vec3 lineColor;
+uniform vec3 u_color;
 
 void main() {
 
-	vColor;
-	
-	#ifdef USE_COLOR
-		gl_FragColor = vec4(vColor, opacity);
-	
-	#else
-		gl_FragColor = vec4(lineColor, opacity);
-	#endif
+	gl_FragColor = vec4(vColor, opacity);
+
 }

@@ -47,7 +47,6 @@ const methods = {
 
 		this.geometry.translate(-positionDelta.x, -positionDelta.y, -positionDelta.z);
 		this.setPosition(m);
-					console.log(this.position)
 
 		return this
 	},
@@ -246,9 +245,13 @@ const methods = {
 
 	computeValue(v, p) {
 
-		if (typeof v !== 'function') return v
-		else return v(p)
+		if (methods.isFunction(v)) return v(p)
+		else return v
 
+	},
+
+	isFunction(v) {
+		return typeof v === 'function'
 	},
 
 	setTarget(mc) {

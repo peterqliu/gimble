@@ -13,7 +13,7 @@ export default class LineMaterial extends ShaderMaterial {
 			side:2,
 			transparent: true,
 			uniforms: {
-				lineColor: {value: new Color(1,1,1)},
+				u_color: {value: new Color('red')},
 				zoom: state.uniforms.zoom,
 				opacity: { value: 1 },
 

@@ -16,12 +16,7 @@ export default class LabelMesh extends Group {
 			.forEach(g=>this.add(LabelMesh.makeText(g)))
 
 	}
-	get size() {
-		return this.style.size
-	}
-	get opacity() {
-		return this.style.opacity
-	}
+
 
 	set size(s) {
 
@@ -67,6 +62,15 @@ export default class LabelMesh extends Group {
 		this.applyStyle('anchorY', a)		
 	}
 
+	get billboard() {return this.style.billboard}
+	get zoomScaled() {return this.style.zoomScaled}
+	get opacity() {return this.style.opacity}
+	get size() {return this.style.size}
+	get haloColor() {return this.style.haloColor}
+	get haloWidth() {return this.style.haloWidth}
+
+	get radius() {return this.style.radius}
+	get color() {return this.style.color}
 
 	// some updates are somehow slow enough
 	// to cause race condition with render loop.

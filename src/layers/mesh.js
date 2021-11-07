@@ -38,15 +38,14 @@ const makeMaterial = (layerType, style) => {
 
 		const color = new Color(style.color);
 
-		if (layerType === 'line') material.uniforms.lineColor.value = color;
+		if (layerType === 'line') material.uniforms.u_color.value = color;
 		else material.color = color
 
 	}	
 
 	// if opacity is literal and <1, 
-	if (literalOpacity && style.opacity<1) {
-		material.opacity = style.opacity
-	}
+	if (literalOpacity && style.opacity<1) material.opacity = style.opacity
+	
 
 	material.transparent = true;
 
@@ -92,16 +91,35 @@ export class Primitive extends BasicMesh{
 
 		else if (type === 'circle') return new CircleMesh(geom, style)
 
-
-
 		// otherwise, build geometries of each feature and merge them into one
-		geom = geom.length === 1 ? geometry[type](...geom) : 
+		const merged = geom.length === 1 ? geometry[type](...geom) : 
 		BufferGeometryUtils.mergeBufferGeometries(
 			geom.map((f,i) => geometry[type](f, i))
 		)
-
-		const m = new BasicMesh(geom, makeMaterial(type, style))
+		const m = new BasicMesh(merged, makeMaterial(type, style))
 			.create(d)
+
+
+		m.properties = {
+			indices: function() {
+
+				var start = 0;
+
+				return geom.map(ft=>{
+					
+					const output = {
+						start: start,
+						length:ft.g.length,
+					}
+
+					start += output.length;
+					return output
+				});
+
+			}(),
+			values: geom.map(ft=>ft.p)
+		}
+
 		m.style = style;
 		return m
 
@@ -206,7 +224,16 @@ export class Line extends Primitive {
 		this.copy(line);
 
 		this.style = line.style;
+		this.properties = line.properties;
+	}
 
+	get width() { return this.style.width}
+
+	set width(w) {
+
+		this.geometry.attributes.lineWidth.array.fill(w);
+		line.geometry.attributes.lineWidth.needsUpdate = true
+		this.renderLoop?.rerender();
 	}
 }
 
@@ -217,7 +244,9 @@ export class Fill extends Primitive {
 		super();
 		const fill = this.fromData('fill', g, styleObj);
 		this.copy(fill);
+
 		this.style = fill.style;
+		this.properties = fill.properties;
 	}
 }
 
@@ -228,6 +257,8 @@ export class Extrusion extends Primitive {
 		super();
 		const extrusion = this.fromData('extrusion', g, styleObj);
 		this.copy(extrusion);
+
+		this.properties = extrusion.properties;
 		this.style = extrusion.style;
 	}
 }

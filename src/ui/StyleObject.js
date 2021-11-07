@@ -44,7 +44,7 @@ const props = {
 	line: ['width'],
 	label: ['fontUrl', 'text', 'size', 'billboard', 'zoomScaled', 'align', 'maxWidth', 'haloWidth', 'haloColor', 'anchorX', 'anchorY'],
 	sphere: ['segments', 'radius'], 
-	circle: ['radius', 'billboard', 'zoomScaled', 'strokeWidth', 'strokeColor', 'blur'],
+	circle: ['radius', 'billboard', 'zoomScale', 'strokeWidth', 'strokeColor', 'blur'],
 	fill: []
 }
 

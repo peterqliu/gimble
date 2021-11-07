@@ -1,4 +1,4 @@
-import {Mesh} from 'three';
+import {Mesh, Float32BufferAttribute, Color} from 'three';
 import methods from './ObjectMethods.js'
 
 // This class implements animations entirely on CPU: calculating end-state matrices from p/s/r,
@@ -20,8 +20,13 @@ export default class BasicMesh extends Mesh {
 
 	set color(c) {
 		this.style.color = c;
-		methods.setColor.call(this, c)
+		this.applyValue('color', c, {
+			literal:c=> new Color(c),
+			variable: c=> new Color(c).toArray()
+		})
+
 	}
+
 	set opacity(o) {
 
 		this.style.opacity = o;
@@ -29,25 +34,39 @@ export default class BasicMesh extends Mesh {
 
 	}
 
-	set pitch(p) {
-		methods.setPitch.call(this, p)
+	applyValue(k, v, fn) {
+
+		if (methods.isFunction(v)) {
+
+			var array = []
+
+			this.properties.indices.forEach((p,i)=>{
+				const computed = v(this.properties.values[i]);
+				const transformed = fn.variable ? fn.variable(computed) : computed;
+				for (var j =0; j<p.length; j++) array.push(...transformed);
+			})
+
+			const attribute = new Float32BufferAttribute(array, 1)
+			attribute.needsUpdate = true;
+			this.geometry.setAttribute(k, attribute)
+			this.material.vertexColors = true;
+		}
+
+		else {
+			console.log('literal')
+			// this.material.vertexColors = false;
+			this.geometry.deleteAttribute(k);
+			const styleValue = fn.literal ? fn.literal(v) : v;
+			if (this.material.uniforms) {
+				this.material.uniforms[`u_${k}`] = {value: styleValue};
+			}
+
+			else this.material.color = styleValue
+		}
+
+		this.renderLoop?.rerender();
 	}
 
-	set bearing(b) {
-		methods.setBearing.call(this, b)
-	}
-
-	set roll(r) {
-		methods.setRoll.call(this, r)
-	}
-
-	set target(t) {
-		methods.setTarget.call(this, t)
-	}
-
-	set lngLat(ll) {
-		methods.setLngLat.call(this, ll)
-	}
 }
 
 Object.assign(BasicMesh.prototype, methods)
