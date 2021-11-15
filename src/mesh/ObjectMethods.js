@@ -244,7 +244,7 @@ const methods = {
 	},
 
 	computeValue(v, p) {
-
+		console.log(v,p)
 		if (methods.isFunction(v)) return v(p)
 		else return v
 

@@ -42,7 +42,7 @@ const props = {
 	extrusion: ['height', 'base', 'bevelEnabled'],
 	tube: ['sides', 'radius'],
 	line: ['width'],
-	label: ['fontUrl', 'text', 'size', 'billboard', 'zoomScaled', 'align', 'maxWidth', 'haloWidth', 'haloColor', 'anchorX', 'anchorY'],
+	label: ['color', 'fontUrl', 'text', 'size', 'billboard', 'zoomScaled', 'align', 'maxWidth', 'haloWidth', 'haloColor', 'anchorX', 'anchorY'],
 	sphere: ['segments', 'radius'], 
 	circle: ['radius', 'billboard', 'zoomScale', 'strokeWidth', 'strokeColor', 'blur'],
 	fill: []

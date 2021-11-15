@@ -7,13 +7,16 @@ import methods from './ObjectMethods.js'
 export default class LabelMesh extends Group {
 
 	constructor(geom) {
-
+		console.log(geom)
 		super();
 		this.matrixAutoUpdate = false;
 		this.style = geom.style;
 
 		geom.geometry
-			.forEach(g=>this.add(LabelMesh.makeText(g)))
+			.forEach(g=>{
+				g.s.color = geom.style.color; // add color back in in case it was a nonfunction value that got culled 
+				this.add(LabelMesh.makeText(g))
+			})
 	}
 
 
@@ -68,7 +71,6 @@ export default class LabelMesh extends Group {
 	get haloColor() {return this.style.haloColor}
 	get haloWidth() {return this.style.haloWidth}
 
-	get radius() {return this.style.radius}
 	get color() {return this.style.color}
 
 	// some updates are somehow slow enough
@@ -93,7 +95,7 @@ export default class LabelMesh extends Group {
 		const k = styleMappings[key] || key;
 		this.style[k] = value;
 
-		this.traverse(child => {
+		this.children.forEach(child => {
 				const computed = methods.computeValue(value, child.properties)
 
 				// if function present, apply that to computed value
@@ -125,17 +127,17 @@ export default class LabelMesh extends Group {
 				zoom: styleObj.zoomScaled ? {value: 0} : state.uniforms.zoom	
 			}
 		)
-
+		console.log(styleObj)
 		Object.assign(text, {
 
 			font: styleObj.fontUrl, 
 			text: styleObj.text,
-			fontSize: styleObj.size,
+			fontSize: styleObj.size/1000000,
 			color: new Color(styleObj.color),
 			textAlign: styleObj.align,
 			maxWidth:  0.01 * styleObj.maxWidth * styleObj.size,
 
-			outlineWidth: styleObj.size * styleObj.haloWidth/500,
+			outlineWidth: styleObj.haloWidth/5000000,
 			outlineColor: styleObj.haloColor,
 			anchorX: styleObj.anchorX,	
 			anchorY: styleObj.anchorY,
