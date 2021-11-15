@@ -52,7 +52,7 @@ const makeMaterial = (layerType, style) => {
 	return material
 }
 
-const mlb = new MeshLambertMaterial();
+const mlb = new MeshLambertMaterial({wireframe:true});
 
 
 // generic class for geometry primitives
@@ -78,7 +78,6 @@ export class Primitive extends BasicMesh{
 		}
 
 		if (type === 'label' ) {
-
 
 			geom
 				.forEach(v3f => {
@@ -128,10 +127,9 @@ export class Primitive extends BasicMesh{
 	fromTile(d) {
 
 		const layer = d.layerType;
-
 		const style = d.style = new StyleObject()
 			.fromStylesheetLayer(d.id)
-			.applyDefaults(d.layerType);
+			.applyDefaults(layer);
 
 		if (layer === 'label' || layer === 'circle') {
 
@@ -153,18 +151,11 @@ export class Primitive extends BasicMesh{
 			// if tiled label
 			else if (layer === 'label') {
 
-				const labels = d.geometry.g.map(f => {
+				const l = new LabelMesh({geometry: d.geometry.g})
+					.setZoomLevel(d.zxy.z)
+					.applyTileTranslation(d.meshOptions.anchor);
+				return l
 
-					// hardcoded colors get removed from style object, so retrieve them from stylesheet
-					f.s.color = f.s.color ? new Color(f.s.color) : new Color(style.color)
-					
-					return new LabelMesh(f, f.s)
-						.setZoomLevel(d.zxy.z)
-						.applyTileTranslation(d.meshOptions.anchor)
-
-				})
-
-				return labels
 			}
 		}
 

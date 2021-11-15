@@ -42,7 +42,7 @@ void main() {
 	#endif
 	// edge = sign(lineMiter);
 
-	float zoomScale = pow(2.0, 22.0 - zoom) / (viewportSize.y / pixelRatio);
+	float zoomScale = pow(0.5, zoom);
 	vec3 pointPos = position.xyz + vec3(lineNormal * zoomScale * lineWidth / 2.0 * lineMiter, 0.0);
 	
 	float worldAnimationProgress = clamp(now - worldAnimationStartTime, 0.0, worldAnimationDuration) / worldAnimationDuration; 

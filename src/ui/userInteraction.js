@@ -260,7 +260,10 @@ const setHash = () => {
 
 	window.location.hash = [
 		get.zoom().toFixed(2), 
-		...get.center().toArray().reverse(), 
+		...get.center()
+			.toArray()
+			.reverse()
+			.map(n=>n.toFixed(6)), 
 		get.bearing().toFixed(2), 
 		get.pitch().toFixed(2)
 	].join('/');

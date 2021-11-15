@@ -22,10 +22,10 @@ export default class TileCoordinate extends Vector3 {
 	getMercatorOffset() {
 
 		const wR = constant.worldWidth;
-	    const tileWidth = wR * 2 * Math.pow(0.5, this.z);
+	    const tileWidth = wR * Math.pow(0.5, this.z);
 		const tilePosition = new Vector3(
-			-wR + (this.x + 0.5) * tileWidth,
-			wR - (this.y + 0.5) * tileWidth,
+			-wR/2 + (this.x + 0.5) * tileWidth,
+			wR/2 - (this.y + 0.5) * tileWidth,
 			0
 		)
 	          

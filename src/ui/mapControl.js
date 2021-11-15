@@ -25,8 +25,9 @@ export const set = {
 		state.setU('zoom', zoom);
 
 		this.world.scale
-			.copy(zoomToWorldScale(zoom))
-		set._registerEvent('Zoom')
+			.copy(zoomToWorldScale(zoom));
+
+		set._registerEvent('Zoom');
 
 		const newZoomFloor = Math.floor(zoom);
 		const newZoomIntegerReached = newZoomFloor !== state.interaction.lastIntegerZoom;
@@ -268,7 +269,7 @@ export const MapAnimation = {
     		const rM = calculateCameraRotation(...a.cameraStep)
 			this.camera.matrixWorld
 				.copy( new Matrix4()
-					.makeTranslation(0, 0, constant.worldWidth*4)
+					.makeTranslation(0, 0, constant.worldWidth*2)
 					.premultiply(rM)
 				)
 
@@ -337,7 +338,6 @@ export function panWorld(deltaV3) {
 
 	const world = this.world;
 	MapAnimation.animating = false;
-	// const wR = constant.worldWidth * Math.pow(2, get.zoom())
 	var newPos = state.camera.worldPanDelta
 		.add(world.position)
 		// .clamp(
@@ -361,7 +361,7 @@ export function updateCameraMatrix() {
 
 	// maintain stepback distance from world
 	var centeringMatrix = new Matrix4()
-		.makeTranslation(0, 0, constant.worldWidth*4)
+		.makeTranslation(0, 0, constant.worldWidth*2)
 
 	const rotationMatrix = calculateCameraRotation(
 		get.pitch(), 

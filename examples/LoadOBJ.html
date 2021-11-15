@@ -90,7 +90,7 @@
 								.filterFeatures(p=>p.type ==='water')
 								.concatFeatures(t.layers.water_areas), 
 							{
-								height:6, 
+								height:0.00001, 
 								color: '#abcdef'
 							}
 						).addTo(sf)
@@ -101,7 +101,7 @@
 							t.layers.landuse_areas
 								.filterFeatures(p=>p.type ==='park'), 
 							{
-							height: 1, 
+							height: 0.0001, 
 							color: 'green',
 							// renderOrder:11
 						}).addTo(sf)
@@ -111,7 +111,7 @@
 							t.layers.buildings, 
 							{
 								// renderOrder:-11,
-								height: 10, 
+								height: 0.0001, 
 								// opacity:0.5,
 								color: '#ddd'
 							}
@@ -128,14 +128,14 @@
 								color: 'brown',
 								haloColor: '#eed',
 								haloWidth:1,
-								size:20,
+								size:1,
 								anchorY: 'bottom',
-								translation:{x:0, y:0, z:50},
+								translation:{x:0, y:0, z:0.001},
 								// renderOrder:5
 							}
 						)
 
-						l.forEach(c=>sf.add(c))
+						sf.add(l)
 
 					}
 				}

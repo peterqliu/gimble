@@ -204,9 +204,7 @@ export const setUpFetcherPool = fetcherGeomChannels => {
 
     fetcherPool
         .postEach(
-            () => {
-                return {senderPorts: true}
-            }, 
+            () => ({senderPorts: true}), 
 
             i => fetcherGeomChannels
                 .slice(i*constant.workers.geometry, (i+1)*constant.workers.geometry).map(s=>s.port1)

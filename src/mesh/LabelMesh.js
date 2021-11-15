@@ -14,13 +14,12 @@ export default class LabelMesh extends Group {
 
 		geom.geometry
 			.forEach(g=>this.add(LabelMesh.makeText(g)))
-
 	}
 
 
 	set size(s) {
 
-		this.applyStyle('size', s, v=>v/50)
+		this.applyStyle('size', s, v=>v/5)
 			.rerenderOnComplete()
 	}
 

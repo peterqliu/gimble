@@ -15,7 +15,8 @@ import state from './core/state.js'
 import utils from './core/utils.js'
 
 
-const sm = new sphericalMercator({size: constant.worldWidth*2});
+const subpixelResolution = 1000000;
+const sm = new sphericalMercator({size: constant.worldWidth * subpixelResolution});
 
 const coordValidate = {
 
@@ -25,13 +26,13 @@ const coordValidate = {
 
 		const firstArg = v[0];
 
-
 		if (Array.isArray(true)) {
 			return v.every(n=>typeof n === 'number')
 		}
 
 		else if (typeof v === 'object') {
-			return Object.values(v).every(n => typeof n === 'number')
+			return Object.values(v)
+				.every(n => typeof n === 'number')
 		}
 
 		else return false
@@ -64,12 +65,15 @@ export class LngLat {
 
 	toMercator() {
 
-		const px = sm.px(this.toArray(), 0);
+		const px = sm.px(this.toArray(), 0)
+			.map(c=>c/subpixelResolution);
+
 		const m = new Mercator([
-			px[0] - constant.worldWidth, 
-			-(px[1] - constant.worldWidth), 
+			px[0] - constant.worldWidth/2, 
+			-(px[1] - constant.worldWidth/2), 
 			this.alt ? this.mercatorScale() * this.alt : this.alt
-		]).setMap(this.map)
+		])
+		.setMap(this.map)
 
 		return m
 
@@ -124,11 +128,11 @@ export class Mercator extends THREE.Vector3 {
 	toLngLat(clamp) {
 
 		const adjustedPosition = [
-			this.x + constant.worldWidth,
-			-this.y + constant.worldWidth
+			this.x + constant.worldWidth/2,
+			-this.y + constant.worldWidth/2
 		];
 
-		var lngLat = sm.ll(adjustedPosition, 0);
+		var lngLat = sm.ll(adjustedPosition.map(c=>c*subpixelResolution), 0);
 
 		if (clamp) {
 
@@ -277,7 +281,9 @@ export class NDC extends Vector2{
 		const intExists = ray
 			.intersectPlane(referencePlane, intersectPt);	
 
-		return _sceneUnits ? intExists : this.map.world.worldToLocal(intExists)
+		if (!intExists) console.log(this)
+		if (intExists) return _sceneUnits ? intExists : this.map.world.worldToLocal(intExists)
+		else return undefined
 	
 	}
 

@@ -301,7 +301,7 @@ export const setUpGeometryPool = fetcherGeomChannels => {
 
     geometryPool
         .postEach(
-            () => {return {receiverPorts: true}}, 
+            () => ({receiverPorts: true}), 
             i => fetcherGeomChannels
                 .filter((r, rIndex) => rIndex%constant.workers.geometry === i).map(r=>r.port2)
         )
