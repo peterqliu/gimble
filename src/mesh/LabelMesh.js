@@ -7,7 +7,7 @@ import methods from './ObjectMethods.js'
 export default class LabelMesh extends Group {
 
 	constructor(geom) {
-		console.log(geom)
+
 		super();
 		this.matrixAutoUpdate = false;
 		this.style = geom.style;
@@ -127,7 +127,7 @@ export default class LabelMesh extends Group {
 				zoom: styleObj.zoomScaled ? {value: 0} : state.uniforms.zoom	
 			}
 		)
-		console.log(styleObj)
+
 		Object.assign(text, {
 
 			font: styleObj.fontUrl, 
