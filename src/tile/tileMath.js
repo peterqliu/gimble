@@ -1,6 +1,4 @@
-import {
-	NDC
-} from '../coordMath.js'
+import {NDC} from '../coordMath.js'
 import tc from '@mapbox/tile-cover'
 import constant from '../core/constants.js'
 import {Vector3, Plane, MathUtils} from 'three'
@@ -16,12 +14,12 @@ import TileCoordinate from './TileCoordinate.js'
 // ndc of viewport edge => lnglat
 export const projectViewshed = map => {
 
-	const coords = ndc.viewshed.map(ndc => {
+	const coords = ndc.viewshed.map(corner => {
 
-		const int = new NDC(...ndc)
+		const int = new NDC(...corner)
 			.setMap(map)
 			.toMercator()
-
+		if (!int) console.log(corner)
 		const lngLat = int.toLngLat(true);
 		return [lngLat.lng, lngLat.lat]
 	})
@@ -62,8 +60,9 @@ export const createClippingPlanes = zxy => {
 
 	const z = zxy[0]
 
-	const tilePos = tileOffset(zxy, constant.worldWidth);
-	const tileRadius = constant.worldWidth / Math.pow(2, z); // half tile width
+	const halfWidth = constant.worldWidth/2
+	const tilePos = tileOffset(zxy, halfWidth);
+	const tileRadius = halfWidth / Math.pow(2, z);
 
 	const planePositions = [
 		new Vector3(0, tileRadius, 0), //n

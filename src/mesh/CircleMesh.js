@@ -56,7 +56,7 @@ export default class CircleMesh extends InstancedUniformsMesh {
 
 		this.style[property] = value;
 		const isColor = property.toLowerCase().includes('color');
-		console.log(property, isColor)
+
 		this.iterateInstances(i => {
 
 			// compute function and apply transformation
@@ -69,7 +69,7 @@ export default class CircleMesh extends InstancedUniformsMesh {
 			const propertyIndex = matrixMapping.indexOf(property);
 
 			if (isColor) {
-				console.log(property)
+
 				for (var j = 0; j<3; j++) {
 					matrix.elements[propertyIndex+j*4] = transformed.toArray()[j]
 				}
@@ -90,8 +90,9 @@ export default class CircleMesh extends InstancedUniformsMesh {
 		this.applyStyleToMatrix('color', c, v => new Color(v))
 	}
 
+	// scale is 2x radius
 	set radius(r) {
-		this.applyStyleToMatrix('radius', r)
+		this.applyStyleToMatrix('radius', r*2)
 	}
 
 	set strokeColor(c) {

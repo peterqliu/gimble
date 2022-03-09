@@ -206,12 +206,12 @@ const mouseEvents = {
 
 		const event = new MouseEvent(e, 'mousemove', mapInstance);
 
-		if (e.which === 1) {
+		if (e.buttons === 1) {
 			if (e.ctrlKey) cursorActions[mapping.rightDrag]?.(event);
 			else cursorActions[mapping.leftDrag]?.(event);
 		}			
 
-		else if (e.which === 3) cursorActions[mapping.rightDrag]?.(event);
+		else if (e.buttons === 3) cursorActions[mapping.rightDrag]?.(event);
 
 		EventManager.mouseMoved = true;
 
@@ -260,7 +260,10 @@ const setHash = () => {
 
 	window.location.hash = [
 		get.zoom().toFixed(2), 
-		...get.center().toArray().reverse(), 
+		...get.center()
+			.toArray()
+			.reverse()
+			.map(n=>n.toFixed(6)), 
 		get.bearing().toFixed(2), 
 		get.pitch().toFixed(2)
 	].join('/');

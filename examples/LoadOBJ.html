@@ -1,7 +1,6 @@
 <html>
 	<head>
 		<title>test</title>
-		<!-- <link rel='stylesheet' href='style.css'/> -->
 		<style>
 			body { margin: 0; padding:0; overflow:hidden}
 			#map { position:absolute; height:100%; width:100%; overflow:hidden}
@@ -24,7 +23,7 @@
 				container: 'map',
 				background:'#eed',
 				onLoop: () => stats.update(),
-				center:towerLocation,
+				center: towerLocation,
 				zoom:16,
 				pitch:40
 				// style: stylesheet
@@ -62,13 +61,12 @@
 				{
 					obj: './assets/eiffel.obj',
 					// align model to the map
-					normalize: {pitch:90, roll:45, scale:14}
+					normalize: {pitch:90, roll:45, scale:0.0001}
 				}, 
 
 				obj => {
 					tower = obj;
-					obj
-						.setLngLat(towerLocation)
+					obj.setLngLat(towerLocation)
 					sf.add(obj)
 
 				})
@@ -84,13 +82,14 @@
 				{
 					onTile: t => {
 
+						console.log('Tile', t)
 						// add water areas
 						new gimble.Extrusion(
 							t.layers.landuse_areas
 								.filterFeatures(p=>p.type ==='water')
 								.concatFeatures(t.layers.water_areas), 
 							{
-								height:6, 
+								height:0.0001, 
 								color: '#abcdef'
 							}
 						).addTo(sf)
@@ -101,7 +100,7 @@
 							t.layers.landuse_areas
 								.filterFeatures(p=>p.type ==='park'), 
 							{
-							height: 1, 
+							height: 0.000001, 
 							color: 'green',
 							// renderOrder:11
 						}).addTo(sf)
@@ -110,32 +109,31 @@
 						var b = new gimble.Extrusion(
 							t.layers.buildings, 
 							{
-								// renderOrder:-11,
-								height: 10, 
+								height: 0.0001, 
 								// opacity:0.5,
-								color: '#ddd'
+								color: '#ddd',
 							}
 						)
-
+						console.log(t.layers.buildings)
 						b.addTo(sf)
 
 						// add labels
 						l = new gimble.Label(
-							t.layers.amenity_points
-								.filterFeatures(p=> p.type === 'embassy'), 
+							t.layers.amenity_points,
+								// .filterFeatures(p=> p.type === 'embassy'), 
 							{
 								text: p=>p.name,
 								color: 'brown',
 								haloColor: '#eed',
 								haloWidth:1,
-								size:20,
+								size:1,
 								anchorY: 'bottom',
-								translation:{x:0, y:0, z:50},
+								translation:{x:0, y:0, z:0.0001},
 								// renderOrder:5
 							}
 						)
 
-						l.forEach(c=>sf.add(c))
+						sf.add(l)
 
 					}
 				}

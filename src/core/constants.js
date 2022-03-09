@@ -2,7 +2,8 @@ import * as THREE from 'three'
 
 const constant = {
 
-	worldWidth: 40075000,
+	worldWidth: 360,
+	fov: 45,
 	mercatorRange: {
 		lng: 180,
 		lat: 85.05113

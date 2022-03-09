@@ -40,28 +40,33 @@
 				})
 			})
 
-
+			// track id of actively hovered country
 			var activeCountry;
+
 			map.on('mousemove', e => {
 
+				// get intersected country
 				const int = map.intersect(e, map.world.children)[0]
 
 				if (int) {
 
 					if (int.object.uuid !== activeCountry?.uuid) {
 
+						// grow hovered country
 						int.object.animateTo({
 							scale: {x:1, y:1, z:5}, 
 							duration:100
 						})
 
+						// shrink previous active country
 						activeCountry?.animateTo?.({scale:1})
+
+						// set new active country to newly hovered country
 						activeCountry = int.object
 					}
 
 				}
 			})
-
 		</script>
 		
 	</body>

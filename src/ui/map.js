@@ -103,8 +103,8 @@ export default class gimbleMap {
 		Object.assign(this, {
 
 			render: force => {
-
-				if (force) setup.renderer.render(scene, camera)
+				const {renderer, scene, camera} = this.setup;
+				if (force) renderer.render(scene, camera)
 				else this.loop.rerender()
 
 				return this

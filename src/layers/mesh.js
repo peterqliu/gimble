@@ -46,7 +46,6 @@ const makeMaterial = (layerType, style) => {
 	// if opacity is literal and <1, 
 	if (literalOpacity && style.opacity<1) material.opacity = style.opacity
 	
-
 	material.transparent = true;
 
 	return material
@@ -56,7 +55,7 @@ const mlb = new MeshLambertMaterial();
 
 
 // generic class for geometry primitives
-export class Primitive extends BasicMesh{
+export class Primitive extends BasicMesh {
 
 	constructor() {
 		super()
@@ -79,14 +78,13 @@ export class Primitive extends BasicMesh{
 
 		if (type === 'label' ) {
 
-
 			geom
 				.forEach(v3f => {
 					if (typeof style.color !== 'function') v3f.s.color = style.color
 					// v3f.s = new StyleObject(v3f.s).applyDefaults('label');
 				})
 
-			return new LabelMesh(d)
+			return new LabelMesh(d, styleObj)
 		}
 
 		else if (type === 'circle') return new CircleMesh(geom, style)
@@ -105,7 +103,7 @@ export class Primitive extends BasicMesh{
 
 				var start = 0;
 
-				return geom.map(ft=>{
+				return geom.map(ft => {
 					
 					const output = {
 						start: start,
@@ -117,7 +115,7 @@ export class Primitive extends BasicMesh{
 				});
 
 			}(),
-			values: geom.map(ft=>ft.p)
+			values: geom.map(ft => ft.p)
 		}
 
 		m.style = style;
@@ -128,10 +126,9 @@ export class Primitive extends BasicMesh{
 	fromTile(d) {
 
 		const layer = d.layerType;
-
 		const style = d.style = new StyleObject()
 			.fromStylesheetLayer(d.id)
-			.applyDefaults(d.layerType);
+			.applyDefaults(layer);
 
 		if (layer === 'label' || layer === 'circle') {
 
@@ -152,19 +149,11 @@ export class Primitive extends BasicMesh{
 
 			// if tiled label
 			else if (layer === 'label') {
+				const l = new LabelMesh({geometry: d.geometry.g}, style)
+					.create(d);
 
-				const labels = d.geometry.g.map(f => {
+				return l
 
-					// hardcoded colors get removed from style object, so retrieve them from stylesheet
-					f.s.color = f.s.color ? new Color(f.s.color) : new Color(style.color)
-					
-					return new LabelMesh(f, f.s)
-						.setZoomLevel(d.zxy.z)
-						.applyTileTranslation(d.meshOptions.anchor)
-
-				})
-
-				return labels
 			}
 		}
 

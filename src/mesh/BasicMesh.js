@@ -53,7 +53,7 @@ export default class BasicMesh extends Mesh {
 		}
 
 		else {
-			console.log('literal')
+
 			// this.material.vertexColors = false;
 			this.geometry.deleteAttribute(k);
 			const styleValue = fn.literal ? fn.literal(v) : v;

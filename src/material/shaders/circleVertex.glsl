@@ -32,14 +32,15 @@ void main() {
 	vCoreRatio = radius / totalRadius;
 
 
-	float inverseZoomScale = pow(zoomScale/2.0, zoom) * pow(2.0, 22.0) / viewportSize.y;
+	float inverseZoomScale = pow(zoomScale/2.0, zoom);
 
 	// if scaled independently of zoom, apply compensatory scaling to keep circles at constant size
 	totalRadius *=inverseZoomScale;
 
 	// scale antialiasfraction with zoom and camera distance 
 	// (which is really about world width), divided by the whole size of circle
-	vAAFraction = pow(0.5, zoom) * (- viewMatrix[3][2]/1000.0) / totalRadius;
+	float cameraDistance = - viewMatrix[3][2];
+	vAAFraction = pow(0.5, zoom) * (cameraDistance / 1000.0) / totalRadius;
 
 
 	// increase scale slightly to account for antialiased blurring

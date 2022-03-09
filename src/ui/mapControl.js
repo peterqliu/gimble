@@ -25,22 +25,15 @@ export const set = {
 		state.setU('zoom', zoom);
 
 		this.world.scale
-			.copy(zoomToWorldScale(zoom))
-		set._registerEvent('Zoom')
+			.copy(zoomToWorldScale(zoom));
+
+		set._registerEvent('Zoom');
 
 		const newZoomFloor = Math.floor(zoom);
 		const newZoomIntegerReached = newZoomFloor !== state.interaction.lastIntegerZoom;
-
 		if (newZoomIntegerReached) {
 
 			state.interaction.lastIntegerZoom = newZoomFloor;
-
-			// if (newZoomFloor>state.interaction.lastIntegerZoom){
-			// 	// state.camera.deferredCameraLayerUpdate = true;
-			// }
-
-			// else updateCameraLayer();
-
 			if (state.stylesheet) updateCameraLayer.call(this)
 			
 		}
@@ -268,7 +261,7 @@ export const MapAnimation = {
     		const rM = calculateCameraRotation(...a.cameraStep)
 			this.camera.matrixWorld
 				.copy( new Matrix4()
-					.makeTranslation(0, 0, constant.worldWidth*4)
+					.makeTranslation(0, 0, constant.worldWidth*2)
 					.premultiply(rM)
 				)
 
@@ -337,7 +330,6 @@ export function panWorld(deltaV3) {
 
 	const world = this.world;
 	MapAnimation.animating = false;
-	// const wR = constant.worldWidth * Math.pow(2, get.zoom())
 	var newPos = state.camera.worldPanDelta
 		.add(world.position)
 		// .clamp(
@@ -361,7 +353,7 @@ export function updateCameraMatrix() {
 
 	// maintain stepback distance from world
 	var centeringMatrix = new Matrix4()
-		.makeTranslation(0, 0, constant.worldWidth*4)
+		.makeTranslation(0, 0, constant.worldWidth*2)
 
 	const rotationMatrix = calculateCameraRotation(
 		get.pitch(), 
@@ -410,10 +402,10 @@ export const get = {
 
 // change tile visibility by changing the camera's layer membership (0 always on, as the object3d default)
 export function updateCameraLayer() {
-
-	this.camera.layers.disableAll();
-	this.camera.layers.enable(0);
-	this.camera.layers.enable(state.interaction.lastIntegerZoom+1);
+	const {layers} = this.camera;
+	layers.disableAll();
+	layers.enable(0);
+	layers.enable(state.interaction.lastIntegerZoom+1);
 	this.loop.rerender();
 
 }

@@ -30,7 +30,7 @@ export const setup = {
 			}),
 			scene: new Scene(),
 			world: new Group(),
-			camera: new PerspectiveCamera( 45, 1, 0.001, 1000000000 )
+			camera: new PerspectiveCamera( constant.fov, 1, 0.001, 1000000000 )
 		}
 
 		output.coreLoop.setup = output;
@@ -57,7 +57,7 @@ export const setup = {
 		if (o.defaultLights !== false) {
 
 			const light = new DirectionalLight( 0xffffff, 0.2 );
-			light.position.z = constant.worldWidth * 2
+			light.position.z = constant.worldWidth
 			const ambient = new AmbientLight( 0xffffff, 0.8 );
 
 			output.world.add(ambient);
@@ -75,14 +75,18 @@ export const setup = {
 	},
 
 	setViewportSize: function(x,y) {
-
+		
 		this.camera.aspect = x / y;
+		this.camera.fov = calculateFOV(y);
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(x,y);
 		state.uniforms.viewportSize.value.set(x,y)
 	
 	}
 }
+
+const tanFOV = Math.tan( ( ( Math.PI / 180 ) * constant.fov / 2 ) );
+const calculateFOV = height => ( 360 / Math.PI ) * Math.atan( tanFOV * ( height / 1000 ) );
 
 export function addToWorld(item) {
 

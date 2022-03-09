@@ -26,16 +26,7 @@ export const loadOBJ = (o, cb) => {
 
 }
 
-const normalizeModel = (obj, normalize) => {
-	console.log(obj.children)
-	// const bM = new BasicMesh();
-
-	// obj.children.forEach(c=>bM.add(c))
-	// console.log(bM.children)
-	// // return bM
-	return new BasicObject(obj)
-		.transformGeometry(normalize)	
-}
+const normalizeModel = (obj, normalize) => new BasicObject(obj).transformGeometry(normalize)
 
 const loadGeometry = (o, onLoad, userCb) => {
 	objLoader.load(o.obj || o, obj => {
