@@ -6,7 +6,7 @@ import methods from './ObjectMethods.js'
 
 export default class LabelMesh extends Group {
 
-	constructor(geom) {
+	constructor(geom, style) {
 
 		super();
 		this.matrixAutoUpdate = false;
@@ -14,7 +14,7 @@ export default class LabelMesh extends Group {
 
 		geom.geometry
 			.forEach(g=>{
-				g.s.color = geom.style.color; // add color back in in case it was a nonfunction value that got culled 
+				g.s.color = g.s.color || style.color; // add color back in in case it was a nonfunction value that got culled 
 				this.add(LabelMesh.makeText(g))
 			})
 	}
@@ -177,12 +177,11 @@ export default class LabelMesh extends Group {
 // map troika-three-text property words
 // to more generic words
 const styleMappings = {
-
 	size: 'fontSize',
 	haloColor: 'outlineColor',
 	haloWidth: 'outlineWidth',
 	align: 'textAlign'
-}
+};
 
 Object.assign(LabelMesh.prototype, methods)
 

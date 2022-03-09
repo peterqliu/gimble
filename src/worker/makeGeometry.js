@@ -38,7 +38,6 @@ import GeometryLike from '../geometry/GeometryLike.js'
 
 import TileCoordinate from '../tile/TileCoordinate.js'
 import BufferGeometryUtils from '../layers/BufferGeometryUtils.js'
-// import ShapeUtilsDeps from './dependencies/ShapeUtils.js'
 
 // main thread needs
 import state from '../core/state.js'
@@ -305,10 +304,6 @@ export const setUpGeometryPool = fetcherGeomChannels => {
             i => fetcherGeomChannels
                 .filter((r, rIndex) => rIndex%constant.workers.geometry === i).map(r=>r.port2)
         )
-        // .onMessage(
-        //     onGeometryResponse, 
-        //     (w,d,t)=>{ if (t>20) console.warn(`Long decode from geom worker: `, Math.round(t), d.complete.id, d.complete) }
-        // )
 
     return geometryPool
 

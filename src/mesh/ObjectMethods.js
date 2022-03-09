@@ -53,7 +53,12 @@ const methods = {
 
 	setZoomLevel(z) {
 
-		if (typeof z === 'number') this.layers.set(z+1 || 0);
+		if (typeof z === 'number') {
+			const zoom = z+1 || 0;
+			this.layers.set(zoom);
+			this.traverse(c=>c.layers.set(zoom))
+
+		}
 		
 		else if (typeof z === 'object' && z.length) {
 			this.layers.disableAll();
@@ -220,7 +225,6 @@ const methods = {
 				break;
 
 			case 'LabelMesh':
-				console.log(this.children.length)
 				this.children.forEach(child=>child.material[1].opacity = opacity)
 				// this.material.opacity = opacity;
 				// this.material.transparent = opacity !== 1;
@@ -244,10 +248,7 @@ const methods = {
 	},
 
 	computeValue(v, p) {
-		console.log(v,p)
-		if (methods.isFunction(v)) return v(p)
-		else return v
-
+		return methods.isFunction(v) ? v(p) : v
 	},
 
 	isFunction(v) {

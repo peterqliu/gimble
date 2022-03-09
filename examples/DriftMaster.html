@@ -21,12 +21,32 @@
 				container: 'map',
 				background:'#eed',
 				onLoop: () => stats.update(),
-				zoom:6,
+				zoom:7,
 				pitch:50,
 				interactivity:{},
 			})
 
 
+			function powerSlide(car, target) {
+				car
+					.animateTo(
+						{
+							target:target,
+							duration:300,
+							// defer: true
+						}, 
+						()=> console.log('turned')
+					)
+					.animateTo(
+						{
+							position:target,
+							duration:2000,
+							bearing: Math.random()*99999,
+							defer:true
+						},
+						() => console.log('drove')
+					)
+			}
 			gimble.loadOBJ(
 				{
 					obj:'./assets/nissan/nissan.obj',
@@ -39,7 +59,7 @@
 					}
 				}, 
 
-				car=>{
+				car => {
 
 					window.car = car
 
@@ -47,70 +67,52 @@
 						.filter(i=>!i.name.includes('WINDOW'))
 
 
-					car.setPosition({x:0, y: 0, z:200})
+					car.setPosition({x:0, y: 0, z:1})
 						.setBearing(240)
-						.setScale(1/20)
+						.setScale(0)
 					map.add(car)
 
 					map
-
 						.on('click', e=> {
 							const target = e.mercator
-
-							car
-								.animateTo(
-									{
-										target:target,
-										duration:300,
-										// defer: true
-									}, 
-									()=> console.log('turned')
-								)
-								.animateTo(
-									{
-										position:target,
-										duration:2000,
-										bearing: Math.random()*99999,
-										defer:true
-									},
-									()=> console.log('drove')
-								)
-
+							powerSlide(car, target)
 						})
 
+					console.warn(car.parent);
 
 					// dropping animation
-					car
-						.animateTo({
-							scale:1,
-							duration:100
-						})
-						.animateTo({
-							position:{x:0, y:0, z:0},
-							easing: t=>Math.pow(t, 3),
-							duration:300,
-							defer:true
-						})
-						.animateTo({
-							scale:{x:1.1, y:1.1, z:0.25},
-							duration:50,
-							defer: true
-						})
-						.animateTo({
-							scale:{x:1, y:1, z:1.1},
-							duration:200,
-							defer: true
-						})
-						.animateTo({
-							scale:{x:1, y:1, z:0.9},
-							duration:150,
-							defer: true
-						})
-						.animateTo({
-							scale:1,
-							duration:200,
-							defer: true
-						})
+					setTimeout(()=>{car
+							.animateTo({
+								scale:1,
+								position:{x:0, y:0, z:1.5},
+								duration:300
+							})
+							.animateTo({
+								position:{x:0, y:0, z:0},
+								easing: t=>Math.pow(t, 2),
+								duration:250,
+								defer:true
+							})
+							.animateTo({
+								scale:{x:1.1, y:1.2, z:0.25},
+								duration:50,
+								defer: true
+							})
+							.animateTo({
+								scale:{x:1, y:1, z:1.1},
+								duration:200,
+								defer: true
+							})
+							.animateTo({
+								scale:{x:1, y:1, z:0.9},
+								duration:150,
+								defer: true
+							})
+							.animateTo({
+								scale:1,
+								duration:200,
+								defer: true
+							})}, 2)
 				})
 
 

@@ -46,17 +46,16 @@ const makeMaterial = (layerType, style) => {
 	// if opacity is literal and <1, 
 	if (literalOpacity && style.opacity<1) material.opacity = style.opacity
 	
-
 	material.transparent = true;
 
 	return material
 }
 
-const mlb = new MeshLambertMaterial({wireframe:true});
+const mlb = new MeshLambertMaterial();
 
 
 // generic class for geometry primitives
-export class Primitive extends BasicMesh{
+export class Primitive extends BasicMesh {
 
 	constructor() {
 		super()
@@ -85,7 +84,7 @@ export class Primitive extends BasicMesh{
 					// v3f.s = new StyleObject(v3f.s).applyDefaults('label');
 				})
 
-			return new LabelMesh(d)
+			return new LabelMesh(d, styleObj)
 		}
 
 		else if (type === 'circle') return new CircleMesh(geom, style)
@@ -104,7 +103,7 @@ export class Primitive extends BasicMesh{
 
 				var start = 0;
 
-				return geom.map(ft=>{
+				return geom.map(ft => {
 					
 					const output = {
 						start: start,
@@ -116,7 +115,7 @@ export class Primitive extends BasicMesh{
 				});
 
 			}(),
-			values: geom.map(ft=>ft.p)
+			values: geom.map(ft => ft.p)
 		}
 
 		m.style = style;
@@ -150,10 +149,9 @@ export class Primitive extends BasicMesh{
 
 			// if tiled label
 			else if (layer === 'label') {
+				const l = new LabelMesh({geometry: d.geometry.g}, style)
+					.create(d);
 
-				const l = new LabelMesh({geometry: d.geometry.g})
-					.setZoomLevel(d.zxy.z)
-					.applyTileTranslation(d.meshOptions.anchor);
 				return l
 
 			}

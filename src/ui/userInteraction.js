@@ -206,12 +206,12 @@ const mouseEvents = {
 
 		const event = new MouseEvent(e, 'mousemove', mapInstance);
 
-		if (e.which === 1) {
+		if (e.buttons === 1) {
 			if (e.ctrlKey) cursorActions[mapping.rightDrag]?.(event);
 			else cursorActions[mapping.leftDrag]?.(event);
 		}			
 
-		else if (e.which === 3) cursorActions[mapping.rightDrag]?.(event);
+		else if (e.buttons === 3) cursorActions[mapping.rightDrag]?.(event);
 
 		EventManager.mouseMoved = true;
 

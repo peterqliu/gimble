@@ -1,7 +1,6 @@
 import V3FeatureCollection from '../geometry/V3FeatureCollection.js'
 import V3Feature from '../geometry/V3Feature.js'
 
-// import vT from '@mapbox/vector-tile'
 import Pbf from '../worker/dependencies/pbf.js'
 import {vectorTile, classifyRings} from '../worker/dependencies/vectorTile.js'
 import TileCoordinate from '../tile/TileCoordinate.js'

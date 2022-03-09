@@ -127,7 +127,7 @@ export default class AnimationOptions {
 
 	// mesh/object animation only, fired by coreLoop
 
-	coreLoopAnimation = mesh => {
+	coreLoopAnimation(mesh) {
 
 		const now = state.getU('now');
 

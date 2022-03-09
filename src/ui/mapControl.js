@@ -31,17 +31,9 @@ export const set = {
 
 		const newZoomFloor = Math.floor(zoom);
 		const newZoomIntegerReached = newZoomFloor !== state.interaction.lastIntegerZoom;
-
 		if (newZoomIntegerReached) {
 
 			state.interaction.lastIntegerZoom = newZoomFloor;
-
-			// if (newZoomFloor>state.interaction.lastIntegerZoom){
-			// 	// state.camera.deferredCameraLayerUpdate = true;
-			// }
-
-			// else updateCameraLayer();
-
 			if (state.stylesheet) updateCameraLayer.call(this)
 			
 		}
@@ -410,10 +402,10 @@ export const get = {
 
 // change tile visibility by changing the camera's layer membership (0 always on, as the object3d default)
 export function updateCameraLayer() {
-
-	this.camera.layers.disableAll();
-	this.camera.layers.enable(0);
-	this.camera.layers.enable(state.interaction.lastIntegerZoom+1);
+	const {layers} = this.camera;
+	layers.disableAll();
+	layers.enable(0);
+	layers.enable(state.interaction.lastIntegerZoom+1);
 	this.loop.rerender();
 
 }
