@@ -7,7 +7,6 @@ class GeometryLike {
 
 	constructor(o) {
 		this.input = o.constructor.name === 'Object' ? flatten(o) : o;
-
 	}
 
 	// takes input geometry, converts to V3Feature, computes style, flattens it,

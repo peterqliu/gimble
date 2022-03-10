@@ -16,6 +16,12 @@
 			stats = new Stats();
 			document.body.appendChild( stats.dom );
 
+			gimble.projection = {
+				type: 'mercator',
+				extent: 36,
+				origin:[-180, -45]
+			}
+
 			var map = new gimble.Map({
 				container: 'map',
 				background:'#eed',
@@ -30,9 +36,9 @@
 				r.features.forEach( f => {
 
 					const country = new gimble.Extrusion(f, {
-						height:1,
+						height:0.5,
 						color: Math.random() * 0xffffff,
-						radius: 20000
+						translation: {x:0, y:0, z:250}
 					})
 
 					map.add(country)
@@ -48,25 +54,24 @@
 				// get intersected country
 				const int = map.intersect(e, map.world.children)[0]
 
-				if (int) {
+				if (int && int?.object.uuid !== activeCountry?.uuid) {
 
-					if (int.object.uuid !== activeCountry?.uuid) {
+					// grow hovered country
+					int.object.animateTo({
+						scale: {x:1, y:1, z:5}, 
+						duration:100
+					})
 
-						// grow hovered country
-						int.object.animateTo({
-							scale: {x:1, y:1, z:5}, 
-							duration:100
-						})
+					// shrink previous active country
+					activeCountry?.animateTo?.({scale:1})
 
-						// shrink previous active country
-						activeCountry?.animateTo?.({scale:1})
-
-						// set new active country to newly hovered country
-						activeCountry = int.object
-					}
-
+					// set new active country to newly hovered country
+					activeCountry = int.object
 				}
+
 			})
+			// map.add(new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 100, 100), new THREE.MeshBasicMaterial({wireframe:true, color: 'black'})))
+
 		</script>
 		
 	</body>

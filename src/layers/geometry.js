@@ -117,7 +117,8 @@ const extrusionGeometry = (ft, index) => {
 	
 	ft.s.depth = ft.s.height;
 	const g = new THREE.ExtrudeGeometry(ft._makeShape(), ft.s);
-	// g.translate(0,0, ft.s.height);
+	console.warn(ft.s.height)
+	g.translate(0,0, ft.s.height);
 	applyColorAlpha.call(g, ft.s)
 
 

@@ -9,15 +9,14 @@ import {
 } from 'three'
 import * as THREE from 'three'
 
-// import {world, camera} from './ui/threeSetup.js'
 import sphericalMercator from "@mapbox/sphericalmercator"
 import state from './core/state.js'
 import utils from './core/utils.js'
 
-
+// keep lnglat to 6 decimal places
 const subpixelResolution = 1000000;
-const sm = new sphericalMercator({size: constant.worldWidth * subpixelResolution});
 
+export const sm = new sphericalMercator({size: 360 * subpixelResolution});
 const coordValidate = {
 
 	type: ['array', 'object'],
@@ -65,16 +64,18 @@ export class LngLat {
 
 	toMercator() {
 
-		const px = sm.px(this.toArray(), 0)
-			.map(c=>c/subpixelResolution);
+		const {extent, origin, _originShift} = constant.projection;
+		const normalizedOrigin = this.toArray()
+			// .map((d,i)=> d-origin[i])
+		const px = sm.px(normalizedOrigin, 0)
+			.map(c=>c/subpixelResolution)
 
 		const m = new Mercator([
-			px[0] - constant.worldWidth/2, 
-			-(px[1] - constant.worldWidth/2), 
+			extent * (px[0]/360 - _originShift[0]), 
+			-extent * ( px[1]/360 - _originShift[1]), 
 			this.alt ? this.mercatorScale() * this.alt : this.alt
 		])
 		.setMap(this.map)
-
 		return m
 
 	}
@@ -126,20 +127,23 @@ export class Mercator extends THREE.Vector3 {
 
 	// to lnglat
 	toLngLat(clamp) {
+		const {x, y} = this;
+		const {extent, origin} = constant.projection;
 
-		const adjustedPosition = [
-			this.x + constant.worldWidth/2,
-			-this.y + constant.worldWidth/2
-		];
+		// scale world units back to 360 width, so it could be used with sm instance
+		const adjustedPosition = ([
+			x + extent/2,
+			-y + extent/2
+		]).map(c=>c*subpixelResolution*360/extent);
 
-		var lngLat = sm.ll(adjustedPosition.map(c=>c*subpixelResolution), 0);
+		var lngLat = sm.ll(adjustedPosition, 0)
+			.map((d,i)=>d + origin[i]);
 
 		if (clamp) {
-
-			const range = constant.mercatorRange;
+			const {maxLng, maxLat} = constant.projection;
 			lngLat = [
-				MathUtils.clamp(lngLat[0], -range.lng, range.lng),
-				MathUtils.clamp(lngLat[1], -range.lat, range.lat)
+				MathUtils.clamp(lngLat[0], -maxLng, maxLng),
+				MathUtils.clamp(lngLat[1], -maxLat, maxLat)
 			]
 
 		}
@@ -262,7 +266,7 @@ export class NDC extends Vector2{
 
 	toMercator(_sceneUnits) {
 
-		const camera = this.map.camera;
+		const {camera} = this.map;
 
 		//set ray to start where the camera is
 		ray.origin
@@ -336,7 +340,14 @@ export function intersect(point, object) {
 
 }
 
-
+export const updateProjection = p => {
+	constant.projection = {
+		...constant.projection,
+		...p,
+		_originShift: p.origin ? sm.px(p.origin, 0)
+			.map(c=>(c/(subpixelResolution*360))) : constant.projection._originShift
+	}
+}
 export const referencePlane = new Plane(new THREE.Vector3(0,0,1))
 
 const ray = new Ray();

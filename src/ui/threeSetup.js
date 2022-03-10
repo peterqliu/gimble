@@ -30,7 +30,7 @@ export const setup = {
 			}),
 			scene: new Scene(),
 			world: new Group(),
-			camera: new PerspectiveCamera( constant.fov, 1, 0.001, 1000000000 )
+			camera: new PerspectiveCamera( constant.fov, 1, 0.001, constant.projection.extent*100 )
 		}
 
 		output.coreLoop.setup = output;
@@ -57,7 +57,7 @@ export const setup = {
 		if (o.defaultLights !== false) {
 
 			const light = new DirectionalLight( 0xffffff, 0.2 );
-			light.position.z = constant.worldWidth
+			light.position.z = constant.projection.extent;
 			const ambient = new AmbientLight( 0xffffff, 0.8 );
 
 			output.world.add(ambient);

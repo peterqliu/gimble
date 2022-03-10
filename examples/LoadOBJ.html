@@ -17,7 +17,7 @@
 			document.body.appendChild( stats.dom );
 
 			const towerLocation = [2.2945,48.85825];
-
+			gimble.worldWidth = 360000000
 			var sf = new gimble.Map({
 
 				container: 'map',
@@ -61,7 +61,7 @@
 				{
 					obj: './assets/eiffel.obj',
 					// align model to the map
-					normalize: {pitch:90, roll:45, scale:0.0001}
+					normalize: {pitch:90, roll:45, scale:60}
 				}, 
 
 				obj => {
@@ -109,7 +109,7 @@
 						var b = new gimble.Extrusion(
 							t.layers.buildings, 
 							{
-								height: 0.0001, 
+								height: 100, 
 								// opacity:0.5,
 								color: '#ddd',
 							}
@@ -125,10 +125,11 @@
 								text: p=>p.name,
 								color: 'brown',
 								haloColor: '#eed',
-								haloWidth:1,
-								size:1,
+								haloWidth:0.25,
+								size:2,
 								anchorY: 'bottom',
-								translation:{x:0, y:0, z:0.0001},
+								translation:{x:0, y:0, z:150},
+								maxWidth:5,
 								// renderOrder:5
 							}
 						)

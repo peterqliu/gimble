@@ -261,7 +261,7 @@ export const MapAnimation = {
     		const rM = calculateCameraRotation(...a.cameraStep)
 			this.camera.matrixWorld
 				.copy( new Matrix4()
-					.makeTranslation(0, 0, constant.worldWidth*2)
+					.makeTranslation(0, 0, constant.projection.extent*2)
 					.premultiply(rM)
 				)
 
@@ -353,7 +353,7 @@ export function updateCameraMatrix() {
 
 	// maintain stepback distance from world
 	var centeringMatrix = new Matrix4()
-		.makeTranslation(0, 0, constant.worldWidth*2)
+		.makeTranslation(0, 0, constant.projection.extent * 2)
 
 	const rotationMatrix = calculateCameraRotation(
 		get.pitch(), 

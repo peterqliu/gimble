@@ -84,7 +84,7 @@ export default class V3Feature {
 
 
         // calculate tile width in scene size
-        const tileWidth = constant.worldWidth / Math.pow(2, zxy.z);
+        const tileWidth = constant.projection.extent / Math.pow(2, zxy.z);
 
 
         // project feature geometry to vector3's normalized to the center of its tile

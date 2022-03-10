@@ -6,6 +6,7 @@ import {LngLat, Mercator} from '../coordMath.js'
 import AnimationOptions from '../ui/AnimationOptions.js';
 import state from '../core/state.js'
 import utils from '../core/utils.js'
+
 const methods = {
 
 	addTo(map) {
@@ -74,7 +75,6 @@ const methods = {
 		if (r ?? false) {
 			this.renderOrder = r;
 			this.traverse(item => {
-
 				if (item.material) item.material.depthTest = false;
 			})
 

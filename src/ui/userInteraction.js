@@ -6,9 +6,6 @@ import {
 
 
 import {
-	// world, 
-	// renderer, 
-	// camera, 
 	setup, 
 	container, 
 } from './threeSetup.js'
@@ -211,7 +208,7 @@ const mouseEvents = {
 			else cursorActions[mapping.leftDrag]?.(event);
 		}			
 
-		else if (e.buttons === 3) cursorActions[mapping.rightDrag]?.(event);
+		else if (e.buttons === 2) cursorActions[mapping.rightDrag]?.(event);
 
 		EventManager.mouseMoved = true;
 

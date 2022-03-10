@@ -40,11 +40,11 @@ export const identifyTiles = o => {
 	
 	ring.coordinates[0].forEach( (ll,i)=>{
 
-		const range = constant.mercatorRange;
+		const {maxLng, maxLat} = constant.projection;
 		ring.coordinates[0][i] = [
 			// hack to accomodate tile-cover bug with perfect 180 longitudes
-			MathUtils.clamp(ll[0], -range.lng, range.lng)*0.99999999,
-			MathUtils.clamp(ll[1], -range.lat, range.lat)
+			MathUtils.clamp(ll[0], -maxLng, maxLng)*0.99999999,
+			MathUtils.clamp(ll[1], -maxLat, maxLat)
 		]
 
 	})
@@ -60,7 +60,7 @@ export const createClippingPlanes = zxy => {
 
 	const z = zxy[0]
 
-	const halfWidth = constant.worldWidth/2
+	const halfWidth = constant.projection.extent/2
 	const tilePos = tileOffset(zxy, halfWidth);
 	const tileRadius = halfWidth / Math.pow(2, z);
 

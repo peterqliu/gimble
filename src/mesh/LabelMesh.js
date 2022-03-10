@@ -48,7 +48,7 @@ export default class LabelMesh extends Group {
 	}
 
 	set haloWidth(w) {
-		this.applyStyle('haloWidth', w, w => this.size * w)
+		this.applyStyle('haloWidth', w)
 	}
 
 	set align(a) {
@@ -132,12 +132,12 @@ export default class LabelMesh extends Group {
 
 			font: styleObj.fontUrl, 
 			text: styleObj.text,
-			fontSize: styleObj.size/1000000,
+			fontSize: styleObj.size,
 			color: new Color(styleObj.color),
 			textAlign: styleObj.align,
-			maxWidth:  0.01 * styleObj.maxWidth * styleObj.size,
+			maxWidth: styleObj.maxWidth * styleObj.size,
 
-			outlineWidth: styleObj.haloWidth/5000000,
+			outlineWidth: styleObj.haloWidth,
 			outlineColor: styleObj.haloColor,
 			anchorX: styleObj.anchorX,	
 			anchorY: styleObj.anchorY,

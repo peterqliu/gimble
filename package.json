@@ -32,7 +32,6 @@
     "dat.gui": "^0.7.7",
     "express": "^4.17.1",
     "increase-memory-limit": "^1.0.7",
-    "isomorphic-fetch": "^3.0.0",
     "jest": "^27.2.4",
     "module": "^1.2.5",
     "npm-watch": "^0.7.0",

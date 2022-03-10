@@ -2,11 +2,15 @@ import * as THREE from 'three'
 
 const constant = {
 
-	worldWidth: 360,
 	fov: 45,
-	mercatorRange: {
-		lng: 180,
-		lat: 85.05113
+
+	projection: {
+		type: 'mercator',
+		extent: 360,
+		origin: [0,0,0],
+		_originShift: [0,0],
+		maxLng: 180,
+		maxLat: 85.05113
 	},
 
 	geojsonTypes: ['Unknown', 'Point', 'LineString', 'Polygon'],

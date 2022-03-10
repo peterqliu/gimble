@@ -68,14 +68,6 @@ export class Primitive extends BasicMesh {
 		var geom = new GeometryLike(g)
 			.prepareForType(type, style)
 
-		const d = {
-			layerType: type,
-			geometry: new GeometryLike(g)
-				.prepareForType(type, style),
-			source: 'geojson',
-			style: style			
-		}
-
 		if (type === 'label' ) {
 
 			geom
@@ -89,6 +81,14 @@ export class Primitive extends BasicMesh {
 
 		else if (type === 'circle') return new CircleMesh(geom, style)
 
+
+		const d = {
+			layerType: type,
+			geometry: geom,
+			source: 'geojson',
+			style: style			
+		}
+		
 		// otherwise, build geometries of each feature and merge them into one
 		const merged = geom.length === 1 ? geometry[type](...geom) : 
 		BufferGeometryUtils.mergeBufferGeometries(

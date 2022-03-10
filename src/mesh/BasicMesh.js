@@ -1,9 +1,6 @@
 import {Mesh, Float32BufferAttribute, Color} from 'three';
 import methods from './ObjectMethods.js'
 
-// This class implements animations entirely on CPU: calculating end-state matrices from p/s/r,
-// linearly interpolating the matrix from start to end on each frame
-
 export default class BasicMesh extends Mesh {
 
 	constructor(geometry, material) {
@@ -21,7 +18,7 @@ export default class BasicMesh extends Mesh {
 	set color(c) {
 		this.style.color = c;
 		this.applyValue('color', c, {
-			literal:c=> new Color(c),
+			literal: c=> new Color(c),
 			variable: c=> new Color(c).toArray()
 		})
 
@@ -42,7 +39,7 @@ export default class BasicMesh extends Mesh {
 
 			this.properties.indices.forEach((p,i)=>{
 				const computed = v(this.properties.values[i]);
-				const transformed = fn.variable ? fn.variable(computed) : computed;
+				const transformed = fn.variable?.(computed) ?? computed;
 				for (var j =0; j<p.length; j++) array.push(...transformed);
 			})
 
@@ -54,9 +51,8 @@ export default class BasicMesh extends Mesh {
 
 		else {
 
-			// this.material.vertexColors = false;
 			this.geometry.deleteAttribute(k);
-			const styleValue = fn.literal ? fn.literal(v) : v;
+			const styleValue = fn.literal?.(v) ?? v;
 			if (this.material.uniforms) {
 				this.material.uniforms[`u_${k}`] = {value: styleValue};
 			}
